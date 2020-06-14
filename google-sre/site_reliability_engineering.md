@@ -1,6 +1,7 @@
 ## Table of Contents
 - [Chapter 1 - Introduction](#Chapter-1---Introduction)
 - [Chapter 2 - The Viewpoint of an SRE](#Chapter-2---The-Viewpoint-of-an-SRE)
+- [Chapter 3 - Embracing Risks](#Chapter-3---Embracing-Risks)
 
 ## Chapter 1 - Introduction
 
@@ -101,3 +102,5 @@ Consider a service with two parts: (1) backend that reads from BigTable, and (2)
 ### Job and Data Organization
 
 Load testing showoed backend servers can handle 100 QPS. Trials showed peak of 3470 QPS so we need 35 servers. We set up 37 (`N+2`) since during updates one server will be down. We may also want to distribute the servers across regions based on region use. We may also want to replicate the BigTable across regions to reduce latency.
+
+## Chapter 3 - Embracing Risks
