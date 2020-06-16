@@ -72,3 +72,29 @@ If you want the LFS partition remounted at boot, we need to add the following li
 ```
 
 ### Chapter 3 - Packages and Patches
+
+First, create a directory to unpack the sources and build them:
+
+```
+mkdir -v $LFS/suorces
+```
+
+Make the directory writable and sticky (oonly owner of a file can delete it).
+
+```
+chmod -v a+wt $LFS/sources
+```
+
+Download all packages and patches:
+
+```
+wget --input-file=wget-list --continue --directory-prefix=$LFS/sources
+```
+
+Verify all packages are available before proceeding:
+
+```
+pushd $LFS/soources
+md5sum -c md5sums
+popd
+```
