@@ -104,3 +104,65 @@ Consider a service with two parts: (1) backend that reads from BigTable, and (2)
 Load testing showoed backend servers can handle 100 QPS. Trials showed peak of 3470 QPS so we need 35 servers. We set up 37 (`N+2`) since during updates one server will be down. We may also want to distribute the servers across regions based on region use. We may also want to replicate the BigTable across regions to reduce latency.
 
 ## Chapter 3 - Embracing Risks
+
+### Managing Risk
+
+Reliability costs:
+1. Redundant machine/compute resources
+2. Opportunity cost
+
+Make service reliable but not more reliable than it needs to be.
+
+### Measuring Service Risk
+
+We want to identify an objective to optimize. We focus on unplanned downtime measured by service availability expressed in number of nines.
+
+### Time-Based Availability
+
+availability=uptime/(uptime+downtime)
+
+
+### Aggregate Availability
+
+availability=successful requests/total requests
+
+### Risk Tolerance of Services
+
+Product managers understand users and business. They determine reliability requirements for a service.
+
+### Target Level of Availability
+
+Service dependent e.g., Google Apps for Work require higher availability than Youtube.
+
+### Types of Failures
+
+Different failures may impact services differently. More significant failures may result taking down the entire service entirely to debug. We may also have scheduled outages which should not be counted as unplanned downtime.
+
+### Cost
+
+Cost is a key factor in determining appropriate availability target for a service.
+
+### Other Service Metrics
+
+Need to understand which metrics are important and which aren't when attempting to take meaningful risks.
+
+### Identifying Risk Tolerance of Infrastructure Services
+
+Infrastructure components often have multiple clients with different needs.
+
+### Target Level of Availability
+
+Consider BigTable. Some services need low latency, high reliability whereas others require high throughput over reliability.
+
+### Cost
+
+It is too expensive to make the system ultra-reliable. We can partition the infrastructure and build two types of cluster: one low-latency and another high throughput.
+
+### Motivation of Error Budgets
+
+Tension between SRE performance (reliability) and developer performance (velocity) include:
+- software fault tolerance,
+- testing,
+- push frequency, and
+- canary duration and size.
+The two teams define an error budget based on the service level objective (SLO). As long as uptime is above SLO, new releases can be pushed. Development teams will push for more testing or slower push velocity to not risk using up budget and stalling their launch i.e., development teams will become self-policing.
