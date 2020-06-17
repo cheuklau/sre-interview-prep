@@ -1,6 +1,8 @@
 ## Table of Contents
 - [Chapter 1 - Introduction](#Chapter-1---Introduction)
 - [Chapter 2 - Preparing the Host System](#Chapter-2----Preparing-the-Host-System)
+- [Chapter 3 - Packages and Patches](#Chapter-3---Packages-and-Patches)
+- [Chapter 4 - Final Preparations](#Chapter-4---Final-Preparations)
 
 ### Chapter 1 - Introduction
 
@@ -98,3 +100,94 @@ pushd $LFS/sources
 md5sum -c md5sums
 popd
 ```
+
+### Chapter 4 - Final Preparations
+
+#### Creating the $LFS/tools Directory
+
+The `$LFS/tools` directory will keep programs compiled in Chapter 5. These programs are temporary tools that are not part of the final LFS system, and will be discarded.
+
+```
+mkdir -v $LFS/tools
+```
+
+Create a simlink on the host system.
+
+```
+ln -sv $LFS/tools /
+```
+
+#### Add the LFS User
+
+We will build packages as non-root user. We create a user `lfs` and member of grooup `lfs`.
+
+```
+groupadd lfs
+useradd -s /bin/bash -g lfs -m -k /dev/null lfs
+```
+
+Note that `-s` is the shell, `-g` is the group, `-m` creates a home directory, and `-k` prevents copying files from a skeleton directory i.e., `/etc/skel`. Assign `lfs` a password.
+
+```
+passwd lfs
+```
+
+Grant `lfs` access to `$LFS/tools` and `$LFS/sources` by making it owner.
+
+```
+chown -v lfs $LFS/tools
+chown -v lfs $LFS/sources
+```
+
+Login as user `lfs`
+
+```
+su - lfs
+```
+
+#### Setting up the Environment
+
+Create a new bash profile:
+
+```
+cat > ~/.bash_profile << "EOF"
+exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
+EOF
+```
+
+When logged on as `lfs`, initial shell is a login shell which reads `/etc/profile` of the host then `.bash_profile`. The `exec env...` command replaces the running shell with a new one with an empty environment except for `HOME`, `TERM` and `PS1` variables. The new shell is non-login which does not read `/etc/profile` or `.bash_profile` but instead reads `.bashrc`. Create the `.bashrc` file:
+
+```
+cat > ~/.bashrc << "EOF"
+set +h
+umask 022
+LFS=/mnt/lfs
+LC_ALL=POSIX
+LFS_TGT=$(uname -m)-lfs-linux-gnu
+PATH=/tools/bin:/bin:/usr/bin
+export LFS LC_ALL LFS_TGT PATH
+EOF
+```
+
+Consierations:
+- `+h` turns off hashing so that bash searches `PATH` (`$LFS/tools`) instead of a hash function when looking for executables
+- Setting `umask` to `022` ensures newly created files and directories are only writable to owner but readable and executable by anyone
+- `LFS` set to mount point
+- `LC_ALL` controls localization of certain programs
+- `LFS_TGT` sets the machine description
+- We add `/tools/bin` in front of standard `PATH` so that the programs we install in Chapter 5 are picked up first
+
+Source the newly created user profile:
+
+```
+source ~/.bash_profile
+```
+
+#### About SBUs
+
+Standard Build Unit (SBU) is a standardized metric of time it takes for a build to complete.
+
+#### About the Test Suites
+
+Test suite for the core toolchain packages (GCC, Binutils and Glibc) are the most importance due to their central role in a properly functioning system.
+

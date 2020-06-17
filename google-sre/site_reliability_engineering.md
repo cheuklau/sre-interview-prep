@@ -2,6 +2,7 @@
 - [Chapter 1 - Introduction](#Chapter-1---Introduction)
 - [Chapter 2 - The Viewpoint of an SRE](#Chapter-2---The-Viewpoint-of-an-SRE)
 - [Chapter 3 - Embracing Risks](#Chapter-3---Embracing-Risks)
+- [Chapter 4 - Service Level Objectives](#Chapter-4---Service-Level-Objectives)
 
 ## Chapter 1 - Introduction
 
