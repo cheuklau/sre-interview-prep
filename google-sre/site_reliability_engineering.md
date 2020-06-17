@@ -166,3 +166,52 @@ Tension between SRE performance (reliability) and developer performance (velocit
 - push frequency, and
 - canary duration and size.
 The two teams define an error budget based on the service level objective (SLO). As long as uptime is above SLO, new releases can be pushed. Development teams will push for more testing or slower push velocity to not risk using up budget and stalling their launch i.e., development teams will become self-policing.
+
+## Chapter 4 - Service Level Objectives
+
+### Service Level Terminology
+
+### Indicators
+
+Service level indicator (SLI) is a quantitative measure of level of service (e.g., request latency, error rate, system throughput, availability, storage durability).
+
+### Objectives
+
+Service level objective (SLO) is a target value for an SLI.
+
+### Agreements
+
+Service level agreements (SLA) is a contract with end users that includes consequences of meeting or missing SLOs.
+
+### What Do You and Your Users Care About?
+
+SLIs fall into a few categories:
+1. User-facing serving systems: availability, latency and throughput
+2. Storage systems: latency, availability, durability
+3. Big data systems: latency, throughput
+
+### Collecting Indicators
+
+We should consider both server and client side metrics.
+
+### Aggregation
+
+Use percentiles instead of averages to avoid false positives on skewed distributions.
+
+### Standardize Indicators
+
+We should standardize common definitions for SLIs e.g., averaged over 1 minute.
+
+### Choosing Targets
+
+Rule of thumbs:
+1. Do not pick a value based on current performance.
+2. Keep the target simple to define.
+3. Avoid absolutes.
+4. Have as few SLOs as possible.
+5. Refine SLO definitions and their targets over time as you learn the system's behavior.
+
+### SLOs Set Expectations
+
+Use a tighter internal SLO than advertised. Avoid over-dependence by deliberately taking the system offline, throttling some requests, etc.
+
