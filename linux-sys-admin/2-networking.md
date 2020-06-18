@@ -55,3 +55,16 @@
 - Use `ifconfig` to set an interface's MTU.
 
 ### Packet Addressing
+
+- Several packet addressing schemes:
+1. MAC addresses for hardware.
+2. IPv4 and IPv6 network addresses for software.
+3. Hostnames for use by people.
+- IP addresses identify network interfaces, not machines!
+- MAC addresses are 2-digit hex bytes e.g., `00:50:8D:9A:3B:DF`.
+- IP addresses are universally unique and hardware independent.
+- IP to hardware address done at the link layer.
+- One or more hostnames can map too IP addresses using `/etc/hosts`, LDAP or DNS.
+- Port is a 16-bit number that supplments an IP to specify a particular communication channel.
+- Services are bound to certain ports in `/etc/services`.
+- Address types includes unicast, multicast, broadcast, and anycast.
