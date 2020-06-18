@@ -3,6 +3,8 @@
 - [Chapter 2 - The Viewpoint of an SRE](#Chapter-2---The-Viewpoint-of-an-SRE)
 - [Chapter 3 - Embracing Risks](#Chapter-3---Embracing-Risks)
 - [Chapter 4 - Service Level Objectives](#Chapter-4---Service-Level-Objectives)
+- [Chapter 5 - Eliminating Toil](#Chapter-5---Eliminating-Toil)
+- [Chapter 6 - Monitoring Distributed Systems](#Chapter-6---Monitoring-Distributed-Systems)
 
 ## Chapter 1 - Introduction
 
@@ -216,3 +218,26 @@ Rule of thumbs:
 
 Use a tighter internal SLO than advertised. Avoid over-dependence by deliberately taking the system offline, throttling some requests, etc.
 
+## Chapter 5 - Eliminating Toil
+
+### Toil Defined
+
+Administrative chores are overhead. Toil is work needed to run a production service that is manual, repetitive, automatable, tactical, devoid of enduring value and scales linearly with growth.
+
+### Why Less Toil is Better
+
+SRE goal to keep toil below 50% of each SRE's time. Other 50% shoould be engineering work to reduce toil.
+
+### What Qualifies as Engineering
+
+Engineering work produces permanent improvements and guided by strategy. SRE activities fall into:
+1. Software engineering
+2. Systems engineering
+3. Toil
+4. Overhead
+
+### Is Toil Bad?
+
+Toil can cause career stagnation, low morale, create confusion, slow progress, sets precedent, promotes attrition and causes breach of faith.
+
+## Chapter 6 - Monitoring Distributed Systems
