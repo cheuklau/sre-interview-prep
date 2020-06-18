@@ -191,3 +191,48 @@ Standard Build Unit (SBU) is a standardized metric of time it takes for a build 
 
 Test suite for the core toolchain packages (GCC, Binutils and Glibc) are the most importance due to their central role in a properly functioning system.
 
+## Chapter 5 - Constructing a Temporary System
+
+To build the minimal system:
+1. Build a new and host-independent toolchain (compiler, assembler, linker, libraries, and utilities).
+2. Use this toolchain to build the other essential tools.
+
+We will store the tools in this chapter in `$LFS/tools`.
+
+### Toolchain Technical Notes
+
+- Binutils installs its assembler and linker in `/tools/bin` and `/tools/$LFS_TGT/bin`.
+- Next package installed is GCC.
+- Next installed are Linux API headers which allow Glibc to interface with Linux kernel features.
+- Next package installed is Glibc for the compiler, binary tools and kernel headers.
+- Next we do a second pass oof Binutils.
+- Finally we do a second pass of GCC.
+- At this point the core toolchain is self-contained and self-hosted. The rest of the packages are built against the new Glibc in `/tools`.
+
+### General Compilation Instructions
+
+For each package that was downloaded into `/mnt/lfs/sources`:
+1. Extract the package with `tar`.
+2. Change into the expanded directory.
+3. Build the package as specified below.
+4. Delete the extracted source directory.
+
+Install the following packages:
+- Binutils (Pass 1)
+    * Contains a linker, assembler and other tools for handling object files.
+    * Run:
+    ```
+    mkdir -v build
+    cd build
+    ../configure --prefix=/tools \
+                 --with-sysroot=$LFS \
+                 --with-lib-path=/tools/lib \
+                 --target=$LFS_TGT \
+                 --disable-nls \
+                 --disable-werror
+    make
+    case $(uname -m) in x86_64)
+        mkdir -v /tools/lib && ln -sv lib /tools/lib64 ;;
+    esac
+    make install
+    ```
