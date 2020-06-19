@@ -68,3 +68,5 @@
 - Port is a 16-bit number that supplments an IP to specify a particular communication channel.
 - Services are bound to certain ports in `/etc/services`.
 - Address types includes unicast, multicast, broadcast, and anycast.
+
+### IP Addressing: The Gory Details
