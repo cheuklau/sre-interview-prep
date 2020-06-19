@@ -5,6 +5,7 @@
 - [Chapter 4 - Service Level Objectives](#Chapter-4---Service-Level-Objectives)
 - [Chapter 5 - Eliminating Toil](#Chapter-5---Eliminating-Toil)
 - [Chapter 6 - Monitoring Distributed Systems](#Chapter-6---Monitoring-Distributed-Systems)
+- [Chapter 7 - The Evolution of Automation at Google](#Chapter-6---The-Evolution-of-Automation-at-Gooogle)
 
 ## Chapter 1 - Introduction
 
@@ -300,3 +301,43 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 1. Rules that catch real incidents should be as simple as possible
 2. Remove data collection, aggregation and alerting that is rarely used
 3. Remove signals in dashboards that are not used
+
+## Chapter 7 - The Evolution of Automatioon at Google
+
+### The Value of Automation
+
+- Consistency
+- A platform that can be extended, applied to more systems, or spun out for profit. A platform also centralizes mistakes.
+- Faster repairs i.e., reduced MTTR
+- Faster action
+- Time saving
+
+### The Value for Google SRE
+
+- For large services, Google does not have the time to hand-hold services.
+- Platform-based approach is required for manageability and scalability.
+
+### The Use Cases for Automation
+
+- Example use cases:
+    * User account creation
+    * Cluster turnup/turndown for services
+    * Software/hardware installation
+    * Rollouts of new software
+    * Runtime config changes
+
+### Hierarchy of Automation Classes
+
+- No automation
+- Externally maintained system-specific automation
+    * SRE has a failover script locally
+- Externally maintained generic automation
+    * SRE adds database support to a generic failover script everyone uses
+- Internally maintained system-specific automation
+    * Database ships with its own failover script
+- Systems that don't need any automation
+    * Database notices prooblems and fails over withoout human intervention
+
+### Automate All the Things
+
+-
