@@ -291,3 +291,26 @@ Install the following packages:
     make
     make install
     ```
+- Linux API Header
+    * Linux API Headers expose the kernel's API for use by Glibc.
+    * Run:
+    ```
+    make mrproper
+    make headers
+    cp -rv usr/include/* /tools/include
+    ```
+- Glibc
+    * Contains the main C library. Provides basic routines for allocating memory, searching directories, opening na dlcosing files, reading and writing files, string handling, pattern matching, math, etc.
+    * Run:
+    ```
+    mkdir -v build
+    cd build
+    ../configure \
+        --prefix=/tools \
+        --host=$LFS_TGT \
+        --build=$(../scripts/config.guess) \
+        --enable-kernel=3.2 \
+        --with-headers=/tools/include
+    make
+    make install
+    ```

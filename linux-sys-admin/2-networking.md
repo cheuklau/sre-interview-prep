@@ -70,3 +70,52 @@
 - Address types includes unicast, multicast, broadcast, and anycast.
 
 ### IP Addressing: The Gory Details
+
+- Internet addresses consist of a network and a host portion
+    * Network identifies a logical network
+    * Host poriton identifies a node on the network
+- `127.0.0.1` is the localhost
+- `ifconfig` sets an interface's IP address
+- Internet address classes (1st byte):
+    * Class A (1-127): early networks
+    * Class B (128-191): large sites
+    * Class C (192-223): easy to get
+    * Class D (224-239): multi-cast
+    * Class E (240-255): experimental
+- Subnet masks define which portion of the address is for the network and which are for the hosts.
+    * Example `255.255.0.0` results in N.N.H.H
+- In CIDR notation, network ends with `/XX` which is the number of bits in the network portion.
+    * Example: `128.138.243.0/24` means `128.138.243` is the network.
+- Consider `172.16.0.0/12`
+    * The IP can be rewritten in binary as:
+    ```
+    1010 1100 - 0001 0000 - 0000 0000 - 0000 0000
+    ```
+    where `2^7+2^5+2^3+2^2=172, 2^4=16`.
+    * The `/12` indicates the first 12 bits are masked for the network. Therefore the following is fixed for the network:
+    ```
+    1010 1100 - 0001
+    ```
+    * The remaining bits can represent the hosts. Therefore the starting host is:
+    ```
+    1010 1100 - 0001 0000 - 0000 0000 - 0000 0000
+    ```
+    The ending host is:
+    ```
+    1010 1100 - 0001 1111 - 1111 1111 - 1111 1111
+    ```
+    or in decimal terms: `127.16.0.0` to `127.31.255.255`.
+
+    ### Private Address and Network Address Translation (NAT)
+
+    - Private addresses are used by site internally but not shown to internet
+    - Border router translates between private and public IP
+    - Reserved private IPs:
+        * Class A (10.0.0.0/8)
+        * Class B (172.16.0.0/12)
+        * Class C (192.168.0.0/16)
+    - Site's border router runs a NAT to allow hosts on private addresses to talk with internet
+    - NAT maintains mapping between internal and external address/port pairs
+
+    ### Routing
+
