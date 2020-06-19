@@ -241,3 +241,62 @@ Engineering work produces permanent improvements and guided by strategy. SRE act
 Toil can cause career stagnation, low morale, create confusion, slow progress, sets precedent, promotes attrition and causes breach of faith.
 
 ## Chapter 6 - Monitoring Distributed Systems
+
+### Definitions
+
+- Monitoring: collecting, processing, aggregating, displaying real-time quantitative data about a system
+- White-box monitoring: metrics exposed by internals of system e.g., logs
+- Black-box monitoring: externally visible behavior as a user would see
+- Dashboard: app providing summary view of a system's core services
+- Alert: notification read by a human
+- Root cause: defect in software or human system causing a failure
+- Node and machine: single instance of a running kernel
+- Push: changing a server's running software
+
+### Why Monitor?
+
+- Analyze long-term trends
+- Compare over time or experiment groups
+- Alerting
+- Building dashboards
+- Conducting ad-hoc retrospective analysis
+
+### Setting Reasonable Expectations for Monitoring
+
+- Keep elements of monitoring system that direct to a pager simple and roobust.
+
+### Symptoms Versus Causes
+
+- Symptom: what is broken
+- Cause: why is it broken
+- Example:
+    * Symptom: Serving HTTP 500s or 404s
+    * Cause: Database servers are confusing connections
+
+### Black-Box Versus White-Box
+
+- Black-box is symptom-oriented and represents active problems.
+- White-box allows detection of imminent problems.
+
+### The Four Golden Signals
+
+1. Latency: time to service a request
+2. Traffic: demand on system
+3. Errors: explicit (500s), implicit (200s with wrong content) or by policy (slow 200s)
+4. Saturation: how full the system is
+
+### Worrying About Your Tail
+
+- To differentiate between slow average and slow tail, collect request couonts bucketed by latencies.
+
+### Choosing an Appropriate Resolution for Measurements
+
+- Different system aspects require different levels of granularity.
+- For example, CPU per second to capture spikes, but hard drive space every 1-2 minutes.
+
+### As Simple as Possible, No Simpler
+
+- Keep monitoring simple:
+1. Rules that catch real incidents should be as simple as possible
+2. Remove data collection, aggregation and alerting that is rarely used
+3. Remove signals in dashboards that are not used
