@@ -84,6 +84,9 @@
     * Class E (240-255): experimental
 - Subnet masks define which portion of the address is for the network and which are for the hosts.
     * Example `255.255.0.0` results in N.N.H.H
+
+### CIDR Notation
+
 - In CIDR notation, network ends with `/XX` which is the number of bits in the network portion.
     * Example: `128.138.243.0/24` means `128.138.243` is the network.
 - Consider `172.16.0.0/12`
@@ -106,16 +109,27 @@
     ```
     or in decimal terms: `127.16.0.0` to `127.31.255.255`.
 
-    ### Private Address and Network Address Translation (NAT)
+### Private Address and Network Address Translation (NAT)
 
-    - Private addresses are used by site internally but not shown to internet
-    - Border router translates between private and public IP
-    - Reserved private IPs:
-        * Class A (10.0.0.0/8)
-        * Class B (172.16.0.0/12)
-        * Class C (192.168.0.0/16)
-    - Site's border router runs a NAT to allow hosts on private addresses to talk with internet
-    - NAT maintains mapping between internal and external address/port pairs
+- Private addresses are used by site internally but not shown to internet
+- Border router translates between private and public IP
+- Reserved private IPs:
+    * Class A (10.0.0.0/8)
+    * Class B (172.16.0.0/12)
+    * Class C (192.168.0.0/16)
+- Site's border router runs a NAT to allow hosts on private addresses to talk with internet
+- NAT maintains mapping between internal and external address/port pairs
 
-    ### Routing
+### Routing
+
+- Routing packets takes the form of rules (rooutes)
+- Routing information is stored in a table in the kernel
+- Routing means:
+    1. Looking up a network address in the routing table to forward a packet to its destinatioon
+    2. Building the routing table in the first place
+- `netstat -r` to view routing table
+    * Shows a host's network interfaces (e.g., `eth0` and `eth1`)
+    * Shows Gateway associated with interfaces and their destination
+    * Host can only rouote packets to gateway machines that are reachable throuogh a directly connected network
+- `route add` to add a route
 
