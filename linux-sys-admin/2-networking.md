@@ -133,3 +133,8 @@
     * Host can only rouote packets to gateway machines that are reachable throuogh a directly connected network
 - `route add` to add a route
 
+### ARP: Address Resolution Protocol
+
+-
+
+
