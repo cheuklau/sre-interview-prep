@@ -5,7 +5,8 @@
 - [Chapter 4 - Service Level Objectives](#Chapter-4---Service-Level-Objectives)
 - [Chapter 5 - Eliminating Toil](#Chapter-5---Eliminating-Toil)
 - [Chapter 6 - Monitoring Distributed Systems](#Chapter-6---Monitoring-Distributed-Systems)
-- [Chapter 7 - The Evolution of Automation at Google](#Chapter-6---The-Evolution-of-Automation-at-Gooogle)
+- [Chapter 7 - The Evolution of Automation at Google](#Chapter-7---The-Evolution-of-Automation-at-Gooogle)
+- [Chapter 8 - Release Engineering](#Chapter-8---Release-Engineering)
 
 ## Chapter 1 - Introduction
 
@@ -340,4 +341,68 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 
 ### Automate All the Things
 
--
+- First example:
+    * Migrating MySQL into Borg
+        + Eliminated machine/replica maintenance
+        + Enable bin-packing of multiple MySQL instances on the same machine
+
+### Detecting Inconsistencies with Prodtest
+
+- ProdTest exteended Python unit test to allow for unit testing of real-world services.
+- Set up a chain of tests and a failure in one test would quickly abort.
+
+## Chapter 8 - Release Engineering
+
+- Solid understanding of source code management, compilers, build configs, automated build tools, package managers and installers.
+- How software is stored in repo, build rules for compilation, testing, packaging and deployment.
+
+### Role of a Release Engineer
+
+- Ensure projects released using consistent and repeatable methodologies.
+
+### Philosophy
+
+- Self-service model: dev teams should control and run their own release process
+    * Projects automatically built and released using automated tools.
+- High velocity: Push on green to deploy every build that passes all tests.
+- Hermetic builds: ensure consistency and reliability
+
+### Enforcement of Policies and Procedures
+
+- Gated operations include:
+    * Approoving source code changes
+    * Specifying actions for release
+    * Deploying a new release
+
+### Continuous Build and Deployment
+
+- Google automated release system is called Rapid.
+- Blaze is Google's build tool of choice.
+    * Devs use build to define build targets and dependencies.
+    * Binaries include build date, revision number, build identifier.
+- All code checked into mainline
+    * Most projects do not release from mainline.
+    * Branch from mainline at specific revision and merge changes back into mainline.
+    * Bug fixes submitted to mainline and cherry-picked into the branch.
+    * This prevents picking up unrelated changes to the mainline since the original build occurred.
+- Continuous test system runs unit tests against code in the mainline each time a change is submitted.
+- Software is distributed to production machines using Midas Package Manager.
+
+### Deployment
+
+- Rapid used for deployments.
+    * Update Borg jobs to use newly built MPM packages.
+- Sisyphus used for more complicated deployments.
+    * General purpose rollout framework.
+
+### Configuration Management
+
+- Use the mainline for configuration.
+    * Binary releases and config changes are decoupled.
+    * This technique often leads to skew between checked-in version of coonfig files and running version.
+- Include config files and binaries in same MPM package.
+    * Limits flexibility by binding binary and config.
+    * Simplifies the deployment.
+- Package config files into MPM configuration packages.
+- Read config files from an external store.
+- Project owners should decide which works best on a case-by-case basis.
