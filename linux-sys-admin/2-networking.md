@@ -135,6 +135,14 @@
 
 ### ARP: Address Resolution Protocol
 
--
+- Hardware addresses needed to transport data across a network's link layer.
+- ARP finds hardware address associated with an IP
+- If host A wants to send a packet to host B on same network, it uses ARP to find B's hardware address
+- If not on same network, host A uses ARP to find router
+- ARP is cached on each machine
+- ARP works by broadcasting packet asking for hardware address for an IP
+    * Corresponding machine replies: yes, that is the IP assigned to one of my interfaces with hardware address
+- `arp` examines and manipulates the kernel's ARP cache
+    * Useful for debugging e.g., two hosts using same IP
 
 
