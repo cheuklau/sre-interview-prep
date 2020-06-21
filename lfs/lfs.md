@@ -407,3 +407,187 @@ Install the following packages:
     make install
     ln -sv gcc /tools/bin/cc
     ```
+- TCL
+    * Contains Tool Command Language.
+    * Support running test suites for GCC and Binutils.
+    * Run:
+    ```
+    cd unix
+    ./configure --prefix=/tools
+    make
+    TZ=UTC make test
+    make install
+    chmod -v u+w /tools/lib/libtcl8.6.so
+    make install-private-headers
+    ln -sv tclsh8.6
+    ```
+- Expect
+    * Contains a program for running scripted dialogues with other interactive programs.
+    * Run:
+    ```
+    cp -v configure{,.orig}
+    sed 's:/usr/local/bin:/bin:' configure.orig > configure
+    ./configure --prefix=/tools \
+        --with-tcl=/tools/lib \
+        --with-tclinclude=/tools/include
+    make
+    make test
+    make SCRIPTS="" install
+    ```
+- DejaGNU
+    * Contains framework for testing other programs
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make install
+    make check
+    ```
+- M4
+    * Coontains a macroprocessor
+    * Run:
+    ```
+    sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
+    echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Ncurses
+    * Run:
+    ```
+    sed -i s/mawk// configure
+    ./configure --prefix=/tools \
+        --with-shared \
+        --without-debug \
+        --without-ada \
+        --enable-widec \
+        --enable-overwrite
+    make
+    make install
+    ln -s libncursesw.so /tools/lib/libncurses.so
+    ```
+- Bash
+    * Contains the Bourne-Again Shell
+    * Run:
+    ```
+    ./configure --prefix=/tools --without-bash-malloc
+    make
+    make tests
+    make install
+    ln -sv bash /tools/bin/sh
+    ```
+- Bison
+    * Contains a parser generator
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Bzip2
+    * Contains programs for compressing and decompressing files
+    * `bzip2` has better compressioon percentage than traditional `gzip`
+    * Run:
+    ```
+    make -f Makefile-libbz2_so
+    make clean
+    make
+    make PREFIX=/tools install
+    cp -v bzip2-shared /tools/bin/bzip2
+    cp -av libbz2.so* /tools/lib
+    ln -sv libbz2.so.1.0 /tools/lib/libbz2.so
+    ```
+- Coreutils
+    * Contains utilities for showing and setting basic system characteristics
+    * Run:
+    ```
+    ./configure --prefix=/tools --enable-install-program=hostname
+    make
+    make RUN_EXPENSIVE_TESTS=yes check
+    make install
+    ```
+- Diffutils
+    * Contains programs that show differences between files or directories
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- File
+    * Contains utility foor deftermining the type of a given file or files
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Findutils
+    * Contains programs to find files
+    * Recursively search throough directory tree and to create, maintain and search a database
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Gawk
+    * Contains programs to manipulate text files
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Gettext
+    * Contains utilities for internalization and localization
+    * Allow programs to be coompiles with native language support
+    * Run:
+    ```
+    ./configure --disable-shared
+    make
+    make check
+    make install
+    ```
+- Grep
+    * Contain programs for searching through files
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Gzip
+    * Contains programs for compressing and decompressing files
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Make
+    * Contains a program for compiling packages
+    * Run:
+    ```
+    ./configure --prefix=/tools --without-guile
+    make
+    make check
+    make install
+    ```
+- Patch
+    * Contains a program for modifying or creating files by applying a patch file created by the diff program.
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
