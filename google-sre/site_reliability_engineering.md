@@ -7,6 +7,7 @@
 - [Chapter 6 - Monitoring Distributed Systems](#Chapter-6---Monitoring-Distributed-Systems)
 - [Chapter 7 - The Evolution of Automation at Google](#Chapter-7---The-Evolution-of-Automation-at-Gooogle)
 - [Chapter 8 - Release Engineering](#Chapter-8---Release-Engineering)
+- [Chapter 9 - Simplicity](#Chapter-9---Simplicity)
 
 ## Chapter 1 - Introduction
 
@@ -406,3 +407,39 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 - Package config files into MPM configuration packages.
 - Read config files from an external store.
 - Project owners should decide which works best on a case-by-case basis.
+
+## Chapter 9 - Simplicity
+
+### System Stability Versus Agility
+
+- SREs create procedures, practices, tools to make software more reliable
+- SREs ensure this work has as little impact on dev agility as possible
+
+### The Virtue of Boring
+
+- SRE teams should push back when accidental complexity is added to systems which they are responsible
+- SRE teams should constantly strive to eliminate complexity in systems they onboard
+
+### I Won't Give up my Code
+
+- SRE promotes practices that makes all code have an essential purpose
+
+### Negative Lines of Code Metric
+
+- Avoid software bloat where software become slower over time as a result of constant additional features
+
+### Minimal APIs
+
+- Write clear, minimal APIs
+
+### Modularity
+
+- Want ability to make changes to parts of the system in isolatioon is essential to creating a supportable system
+
+### Release Simplicity
+
+- Release in smaller batches to move faster with more confidence
+
+### A Simple Conclusion
+
+- Software simplicity is a prerequisite to reliability
