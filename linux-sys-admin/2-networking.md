@@ -145,4 +145,34 @@
 - `arp` examines and manipulates the kernel's ARP cache
     * Useful for debugging e.g., two hosts using same IP
 
+### DHCP: The Dynamic Host Configuratioon Protocol
+
+- When you plug in a device into a network, DHCP is used to:
+    * Obtains IP address for itself on local network
+    * Sets up appropriate default route
+    * Connects itself to a local DNS server
+- Protocol lets a DHCP client lease a variery of network parameters from a central server that is authorized to distribute them:
+    * IP addresses and netmasks
+    * Gateways (default routes)
+    * DNS servers
+    * Syslog hosts
+    * Proxy servers, NTP servers
+- Clients report back periodically too DHCP server to renew their leases
+
+### DHCP Software
+
+- Server package is called `dhcp3-server` on Ubuntu
+- Recommended to use ISC package over vendor specific implementations
+
+### How DHCP Works
+
+- DHCP client broadcasts "Who am I?" message
+- DHCP server negotiates with client to provide an IP address and other networking parameters
+- When client's lease time is over, it attempts to renew its lease
+
+### ISC's DHCP Software
+
+- ISC's daemon is called `dhcpd`, config file is in `/etc/dhcpd.conf` or `/etc/dhcp3/dhcpd.conf`
+- ISC's DHCP client stores status files in `/var/lib/dhcp`
+
 
