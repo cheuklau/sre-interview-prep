@@ -5,7 +5,7 @@
 - [Chapter 4 - Final Preparations](#Chapter-4---Final-Preparations)
 - [Chapter 5 - Constructing a Temporary System](#Chapter-5---Constructing-a-Temporary-System)
 
-### Chapter 1 - Introduction
+## Chapter 1 - Introduction
 
 The LFS system will be built using an already installed Linux distribution (e.g., Debian). The existing host provides the compiler, linker and shell to build the new system.
 
@@ -18,7 +18,7 @@ Breakdown of this book:
 - Chapter 7 sets up basic system configurations.
 - Chapter 8 creates the kernel and boot loader. After this step, the computer can be rebooted into the new LFS system.
 
-### Chapter 2 - Preparing the Host System
+## Chapter 2 - Preparing the Host System
 
 My starting point:
 - AWS EC2, t2.micro
@@ -74,7 +74,7 @@ If you want the LFS partition remounted at boot, we need to add the following li
 /dev/xvdf /mnt/lfs ext4 defaults 1 1
 ```
 
-### Chapter 3 - Packages and Patches
+## Chapter 3 - Packages and Patches
 
 First, create a directory to unpack the sources and build them:
 
@@ -102,7 +102,7 @@ md5sum -c md5sums
 popd
 ```
 
-### Chapter 4 - Final Preparations
+## Chapter 4 - Final Preparations
 
 #### Creating the $LFS/tools Directory
 
@@ -591,3 +591,80 @@ Install the following packages:
     make check
     make install
     ```
+- Perl
+    * Contains Practical Extraction and Report Language
+    * Run:
+    ```
+    sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth
+    make
+    cp -v perl cpan/podlators/scripts/pod2man /tools/bin
+    mkdir -pv /tools/lib/perl5/5.30.1
+    cp -Rv lib/* /tools/lib/perl5/5.30.1
+    ```
+- Python
+    * Run:
+    ```
+    sed -i '/def add_multiarch_paths/a \ return' setup.py
+    ./configure --prefix=/tools --without-ensurepip
+    make
+    make install
+    ```
+- Sed
+    * Contains a stream editor
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Tar
+    * Contains an archiving program
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Texinfo
+    * Coontains programs for reading, writing and converting info pages
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+- Xz
+    * Contains program for compressing and decompressing files
+    * Run:
+    ```
+    ./configure --prefix=/tools
+    make
+    make check
+    make install
+    ```
+
+### Stripping
+
+We can remove unnecessary items. We can remove uneeded debugging tools:
+```
+strip --strip-debug /tools/lib/*
+/usr/bin/strip --strip-unneeded /tools/{,s}bin/*
+```
+Remove documentation:
+```
+rm -rf /tools/{,share}/{info,man,doc}
+```
+Remove unneeded files:
+```
+find /tools/{lib,libexec} -name \*.la -delete
+```
+
+### Change Ownership
+
+Current `$LFS/tools` is owned by `lfs` user who only exists on the host system. We change ownership to `root`:
+```
+chown -R root:root $LFS/tools
+```
