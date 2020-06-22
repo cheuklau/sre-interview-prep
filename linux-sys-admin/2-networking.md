@@ -175,4 +175,10 @@
 - ISC's daemon is called `dhcpd`, config file is in `/etc/dhcpd.conf` or `/etc/dhcp3/dhcpd.conf`
 - ISC's DHCP client stores status files in `/var/lib/dhcp`
 
+### Security Issues
 
+- IP forwarding: best to turn off unless server is meant to be a router since packets can be coerced to oseem like they are coming from within the network
+- ICMP redirects: can maliciously reroute traffic and tamper with routing tables
+- Broadcast pings have been used in DDoS attacks
+- IP spoofing: if software creating packet uses raw socket, it can fill in any source address it likes
+- VPN establishes a series of secure, encrypted tunnels from various locations
