@@ -8,6 +8,7 @@
 - [Chapter 7 - The Evolution of Automation at Google](#Chapter-7---The-Evolution-of-Automation-at-Gooogle)
 - [Chapter 8 - Release Engineering](#Chapter-8---Release-Engineering)
 - [Chapter 9 - Simplicity](#Chapter-9---Simplicity)
+- [Chapter 10 - Practical Alerting](#Chapter-10---Practical-Alerting)
 
 ## Chapter 1 - Introduction
 
@@ -443,3 +444,65 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 ### A Simple Conclusion
 
 - Software simplicity is a prerequisite to reliability
+
+## Chapter 10 - Practical Alerting
+
+### Time-Series Monitoring Outside of Google
+
+- Borgmon relies on a common data exposition format enabling mass data collection with low overheads
+- Data used for rendering charts and creating alerts
+- Scraper Borgmon feed into cluster-level Borgmon
+
+### Instrumentation of Applications
+
+- `/varz` HTTP handler lists all exported variables in plain text
+
+### Exporting Variables
+
+- Each major language used at Google has an implemnetation of the exported variable interface
+
+### Collection of Exported Data
+
+- Service discovery allows monitoring to scale
+- Borgmon fetches `/varz` URI on each target, decodes and stores the values in memory
+
+### Storage in the Time-Series Arena
+
+- Data have form (timestamp, value), stored in chronological lists called time-series, named by a set of labels
+- For example http_requests time-series has dimensions (time step, host id)
+- Garbage collector expires the oldest entries once the time-series arena is full
+- Typically about 12 hours of data is kept (can fit 1 million unique time-series for 12 hours at 1-minute intervals using 17GB RAM)
+
+### Labels and Vectors
+
+- `{var=http_requests,job=webserver,instance=host0:80,service=web,zone=us-west}` is an example vatriable expression to get a time-series
+
+### Rule Evaluation
+
+- Example:
+    * Create alert when web server cluster serves more errors as a percent of requests than normal
+    * Non-200 responses divided by sum of requests over all tasks in cluster
+    * Procedure:
+        1. Aggregate rates of response codes across all tasks, outputting a vector of rates at that point in time
+        2. Compute total error rate, outputting a single value for the cluster at that point in time
+        3. Compute cluster-wide ratio of errors to requests, dividing the total error rate by the rate oof requests that arrived, outputting single value for the cluster at that point in time
+- Borgmon has nearly identical syntax to Prometheus
+
+### Alerting
+
+- When alerting rule is evaluated, result is either true (alert is triggered) or false
+- Borgmon connected to Alertmanager which receives Alert RPCs when rule first triggers then again when the alert is considered to be firing
+
+### Sharding the Monitoring Topology
+
+- Multiple DC scraping Borgmon in each cluster
+- One datacenter Borgmon per cluster sending data to permanent storage and alert manager
+- Global Borgmon in selected clusters sending data to alert manager
+
+### Black-Box Monitoring
+
+- Borgmon is white-box monitoring
+- White-box monitoring does not provide a full picture e.g., queries that never make it due to a DNS error are invisible
+- Use Prober which runs a protocol check against a target and reports success or failure
+    * Can send alerts directly to Alertmanager
+
