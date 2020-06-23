@@ -506,3 +506,46 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 - Use Prober which runs a protocol check against a target and reports success or failure
     * Can send alerts directly to Alertmanager
 
+## Chapter 11 Being On-Call
+
+### Life of an On-Call Engineer
+
+- Take care of operations by managing outages and performing production changes.
+- Typically response times are 5 minutes for user-facing and 30 minutes for less sensitive systems.
+- On-call engineer receives and acknowledges page and then triages the problem, possibly involving other engineers.
+- Non-paging events can be handle by on-call engineers during business hours.
+    * Take priority over project work.
+
+### Balanced On-Call
+
+- Quantity is the percent of time spent by engineers on on-call duties.
+- Quality is the number of incidents that ooccur during on-call.
+
+### Balance in Quantity
+
+- 50% of time engineering, remainder no more than 25% on call, 25% on operational, non-project work.
+
+### Balance in Quality
+
+- On average, dealing with tasks involved with an on-call incident (RCA, remediation, postmortem) takes 6 hours.
+
+### Compensation
+
+- Google offers cash compensation, capped at some proportion of overall salary.
+
+### Feeling Safe
+
+- Important on-call resources:
+    * Clear escalation paths.
+    * Well defined incident management procedures.
+    * Blameless postmortem culture.
+
+### Operational Overload
+
+- Paging alerts should be aligned with symptoms that threaten a service's SLO.
+- All paging alerts should be actionable.
+- SRE have option to give the pager back to dev team until standards of SRE team is met.
+
+### Operational Underload
+
+- To ensure continual practice, exercises can be performed to hone troubleshooting and knowledge of the system.
