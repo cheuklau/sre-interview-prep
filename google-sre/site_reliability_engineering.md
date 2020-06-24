@@ -9,6 +9,8 @@
 - [Chapter 8 - Release Engineering](#Chapter-8---Release-Engineering)
 - [Chapter 9 - Simplicity](#Chapter-9---Simplicity)
 - [Chapter 10 - Practical Alerting](#Chapter-10---Practical-Alerting)
+- [Chapter 11 - Being On-Call](#Chapter-11---Being-On---Call)
+- [Chapter 12 - Effective Troubleshooting](#Chapter-12---Effective-Troubleshooting)
 
 ## Chapter 1 - Introduction
 
@@ -549,3 +551,74 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 ### Operational Underload
 
 - To ensure continual practice, exercises can be performed to hone troubleshooting and knowledge of the system.
+
+## Chapter 12 - Effective Troubleshooting
+
+- SREs need to knoow how the system is designed and built.
+
+### Theory
+
+- We iteratively hypothesize potential causes for failure and try to test those hypotheses.
+- Steps:
+    1. Problem report
+    2. Triage
+    3. Examine
+    4. Diagnose
+    5. Test/treat
+    6. Cure
+- Pitfalls:
+    * Looking at irrelevant symptoms
+    * Misunderstanding system metrics
+    * Misunderstanding how to change the system to test hypotheses
+    * Coming up with improbable theories or latching onto past events
+
+### In Practice
+
+- Problem report e.g., automated alert or ticket
+    * Should give the expected and actual behavior
+    * Should give how to reproduce the behavior
+
+### Triage
+
+- Assess severity to determine level of response required
+- Make the system work as well as it can under the circumstances
+    * Diverting traffic from a broken cluster
+    * Dropping traffic to precent a cascading failure
+    * Disabling sub-systems to lighten the load
+
+### Examine
+
+- Examine each component's behavior
+- Use monitoring system metrics
+- Use logging, tracing requests throuogh the stack
+- Exposing current state e.g., endpoints that show a sample of RPCs recently sent or received to understand how any one server is communicating with others without an architecture diagram
+
+### Diagnose
+
+- Develop plausible hypotheses
+- Look at connections between components
+- A malfunctiong system is still trying to do something so figure out what it is doing, why it is doing it and where its resources are being used
+- Find what touoched it last e.g., a new version deployment or configuration change
+
+### Test and Treat
+
+- Find which factor is at the root of the problem
+- Rule out hypotheses
+    * Consider obvious first
+    * Experiment may have misleading results due to confounding factors
+    * Active tests may change future test results
+
+### Negative Results are Magic
+
+- Do not discount negative results
+- They tell us something certain about production or the design space or the performance limit of a system
+- Publish results
+
+### Cure
+
+- Often we can only find probable causal factors since systems are complex and reproducing the problem in a live environment may not be an option
+
+### Making Troubleshooting Easier
+
+- Build observability
+- Design well-understood and observable interfaces between components
