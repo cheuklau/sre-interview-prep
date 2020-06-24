@@ -182,3 +182,58 @@
 - Broadcast pings have been used in DDoS attacks
 - IP spoofing: if software creating packet uses raw socket, it can fill in any source address it likes
 - VPN establishes a series of secure, encrypted tunnels from various locations
+
+### Basic Network Configuration
+
+- Basic steps to add a new machine to a local network:
+    1. Assign it a unique IP and hostname
+    2. Make sure network interfaces configured at boot time
+    3. Set up default route
+    4. Point to a DNS server to allow it access to internet
+- Most configuration done on DHCP server
+- Use `ping` and `traceroute` to debug
+
+### Hostname and IP address assignment
+
+- Mapping from hostname to IP best maintained through:
+    * `hosts` file
+    * LDAP
+    * DNS
+    * Some combination of above options
+- `/etc/hosts` oldest and simplest way to map names to IPs
+    * Example line: `127.0.0.1 localhost`
+- Use DNS or LDAP to find mappings for rest of local network or the world wide web
+- `hostname` assigns a hostname to a machine
+
+### ifconfig: configure network interfaces
+
+- `ifconfig` command:
+    * Enables or disables a network interface
+    * Sets its IP and subnet mask
+    * Example: `ifconfig eth0 192.168.1.13 netmask 255.255.255.0 up`
+    * Sets IP and netmask for interface eth0 and readies it for use
+- `ifconfig -a` lists the system's network interfaces
+
+### route: configure static rouotes
+
+- `route` defines static routes
+- Routing performed at the IP layer
+- Packet's destination IP is compared with the routes in the kernel's routing table; there are two cases:
+    1. Packet destined for some host on a directly connected network; next-hop gateway address in the routing table is that local host's own interface; packet sent directly to that host; this type of route is added to the routing table by `ifconfig`
+    2. If no route matches the destination, the default route is invoked; otherwise an ICMP network unreachable message is returned to to the sender
+- Example: `route add -net 192.168.45.128/25 zulu-gw.atrust.net`
+    * Adds route to the `192.168.45.128/25` network thruogh the gateway rouoter `zulu-gw.atrust.net` which must be an adjacent host or a local host's own interfaces
+- Other tips:
+    * `netstat -nr` to see existing ruotes
+    * Use `default` keyword to set default route
+    * `route delete` or `route del` to remove entries of a routing table
+    * `route flush` to initialize the routing table
+    * `/etc/networks` maps names to network numbers like the `hosts` file for mapping hosotnames to IP addresses
+    * `rouote add -host` to set up a route thats specific to a single IP
+
+### DNS configuration
+
+- To configure a machine as a DNS client, set up `/etc/resolv.conf`
+    * Lists DNS domains that should be searched to resolve names
+    * Should list closest stable DNS servers first
+    * DHCP client typically adds addresses into `resolv.conf`
