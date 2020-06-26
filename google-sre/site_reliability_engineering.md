@@ -11,6 +11,7 @@
 - [Chapter 10 - Practical Alerting](#Chapter-10---Practical-Alerting)
 - [Chapter 11 - Being On-Call](#Chapter-11---Being-On---Call)
 - [Chapter 12 - Effective Troubleshooting](#Chapter-12---Effective-Troubleshooting)
+- [Chapter 13 - Emergency Response](#Chapter-13---Emergency-Response)
 
 ## Chapter 1 - Introduction
 
@@ -622,3 +623,31 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 
 - Build observability
 - Design well-understood and observable interfaces between components
+
+## Chapter 13 - Emergency Response
+
+### What to Do when Systems Break
+
+- Don't panic, pull in more people if necessary
+
+### Test-Induced Emergency
+
+- Proactive approach by breaking system on purpose, watch response and make changes to improve reliability
+
+### Change-Induced Emergency
+
+- Numerous tests on configuration changes to make sure they don't result in unexpected and undesired behavior
+
+### Process-Induced Emergency
+
+- Sometimes automation tools may not behave accordingly
+
+### All Problems have Solutions
+
+- Systems will break in unknown ways
+
+### Learn from the Past. Don't Repeat it.
+
+- Keep a history of outages
+- Ask the big, even improbable questions
+- Encourage proactive testing
