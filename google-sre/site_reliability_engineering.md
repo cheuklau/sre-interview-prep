@@ -12,6 +12,7 @@
 - [Chapter 11 - Being On-Call](#Chapter-11---Being-On---Call)
 - [Chapter 12 - Effective Troubleshooting](#Chapter-12---Effective-Troubleshooting)
 - [Chapter 13 - Emergency Response](#Chapter-13---Emergency-Response)
+- [Chapter 14 - Managing Incidents](#Chapter-14---Managing-Incidents)
 
 ## Chapter 1 - Introduction
 
@@ -651,3 +652,26 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 - Keep a history of outages
 - Ask the big, even improbable questions
 - Encourage proactive testing
+
+## Chapter 14 - Managing Incidents
+
+- Effective incident management key to limiting the disruption caused by an incident and restoring normal business operations.
+
+### Unmanaged Incidents
+
+- Common hazards that cause incidents to spiral out of control:
+    * Sharp focus on the technical problem
+    * Poor communication
+    * Freelancing
+
+### Elements of Incident Management Process
+
+- A well designed incident management process has the following features:
+    * Recursive separation of responsibilities
+    * Incident command
+    * Operational work
+    * Communication
+    * Planning
+    * A recognized command post
+    * Live incident state document
+    * Clear, live handoff
