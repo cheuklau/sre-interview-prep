@@ -675,4 +675,30 @@ chown -R root:root $LFS/tools
 ### Introduction
 
 - Start constructing the LFS system by chrooting into the temporary mini Linux system, make a few final preparations and begin installing the packages
--
+
+### Preparing Virtual Kernel File Systems
+
+- Various file systems exported by the kernel are used to communicate with the kernel itself
+- These file systems reside in memory
+- Create directories onto which file systems will be mounted
+```
+mkdir -pv $LFS/{dev,proc,sys,run}
+```
+- When kernel boots the system, it needs a few device nodes i.e., `console` and `null` devices
+    * Must be created on hard disk before `udevd` is started
+    * Create the devices:
+    ```
+    mknod -m 600 $LFS/dev/console c 5 1
+    mknod -m 666 $LFS/dev/null c 1 3
+    ```
+- Bind mount host system's `/dev` :
+```
+mount -v --bind /dev $LFS/dev
+```
+- Mount remaining virtual kernel filesystems:
+```
+mount -vt devpts devpts $LFS/dev/pts -o gid=5,mode=620
+mount -vt proc proc $LFS/proc
+mount -vt sysfs sysfs $LFS/sys
+mount -vt tmpfs tmpfs $LFS/run
+```
