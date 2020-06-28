@@ -13,6 +13,7 @@
 - [Chapter 12 - Effective Troubleshooting](#Chapter-12---Effective-Troubleshooting)
 - [Chapter 13 - Emergency Response](#Chapter-13---Emergency-Response)
 - [Chapter 14 - Managing Incidents](#Chapter-14---Managing-Incidents)
+- [Chapter 15 - Postmortem Culture](#Chapter-15---Postmortem-Culture)
 
 ## Chapter 1 - Introduction
 
@@ -675,3 +676,19 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
     * A recognized command post
     * Live incident state document
     * Clear, live handoff
+
+## Chapter 15 - Postmortem Culture: Learning from Failure
+
+- Primary goals of a postmoretm is to ensure incident is documentd
+    * All rooot causes are understood
+    * Effective preventive actions are put in place to reduce likelihood of recurrence
+- Triggers for postmortem:
+    * User affected
+    * Data loss
+    * On-call engineer intervention
+    * Resolution time above threshold
+    * Monitoring failure
+- Blameless postmortem is key
+- Encourage regular review sessions for postmortems
+- Visibly reward people for doing the right thing
+- Ask for feedback on postmortem effectiveness
