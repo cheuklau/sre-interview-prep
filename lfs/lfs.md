@@ -4,6 +4,7 @@
 - [Chapter 3 - Packages and Patches](#Chapter-3---Packages-and-Patches)
 - [Chapter 4 - Final Preparations](#Chapter-4---Final-Preparations)
 - [Chapter 5 - Constructing a Temporary System](#Chapter-5---Constructing-a-Temporary-System)
+- [Chapter 6 - Installing Basic System Software](#Chapter-6---Installing-Basic-System-Software)
 
 ## Chapter 1 - Introduction
 
@@ -668,3 +669,10 @@ Current `$LFS/tools` is owned by `lfs` user who only exists on the host system. 
 ```
 chown -R root:root $LFS/tools
 ```
+
+## Chapter 6 - Installing Basic System Software
+
+### Introduction
+
+- Start constructing the LFS system by chrooting into the temporary mini Linux system, make a few final preparations and begin installing the packages
+-

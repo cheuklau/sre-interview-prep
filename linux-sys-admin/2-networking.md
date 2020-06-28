@@ -237,3 +237,19 @@
     * Lists DNS domains that should be searched to resolve names
     * Should list closest stable DNS servers first
     * DHCP client typically adds addresses into `resolv.conf`
+
+### System-Specific Network Configuration
+
+- Use of `/etc/hosts` and `/etc/resolv.conf` relatively constant among Linux systems
+
+### Linux Networking
+
+- After any change to a file that controls network config at boot, you may need to either reboot or bring network interface down then up again
+- Use `ifdown <interface>` and `ifup <interface>`
+
+### Ubuntu Network Configuration
+
+- Ubuntu configures the network in:
+    * `/etc/hostname` - sets hostname
+    * `/etc/network/interfaces` - sets IP address, netmask and default gateway
+- `ifup` and `ifdown` bring up and down the interfaces
