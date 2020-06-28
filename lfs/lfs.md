@@ -702,3 +702,45 @@ mount -vt proc proc $LFS/proc
 mount -vt sysfs sysfs $LFS/sys
 mount -vt tmpfs tmpfs $LFS/run
 ```
+
+### Package Management Techniques
+
+### Install in Separate Directories
+
+- Package manager tracks installation of files making it easy to remove and upgrade packages
+- Each package is installed in a separate directory e.g., `/usr/pkg/foo-1.1` and a symlink is made from `/usr/pkg/foo` to `/usr/pkg/foo-1.1`
+- Env vars e.g., `PATH`, `LD_LIBRARY_PATH`, `MANPATH`, `INFOPATH` need to be expanded to include `/usr/pkg/foo`
+- For more than a few packages, this scheme becomes unmanageable
+
+### Symlink Style Package Management
+
+- Similar to previous scheme but instead of making the symlink, each file is symlinked into `/usr`
+- This removes need to alter env vars
+- Example:
+```
+./configure --prefix=/usr
+make
+make DESTDIR=/usr/pkg/libfoo/1.1 install
+```
+
+### Timestamp Based
+
+- File is timestamped before installation of the package
+- After installation, `find` can generate a log of all files instawlled after the timestamp file was created
+
+### Tracing Installation Scripts
+
+- Record commands that installation scripts perform
+
+### Creating Package Archives
+
+- Package installation faked into a separate tree similar to Symlink style package management
+- After installation a package is archived using the installed files
+- Archive used to install the package on local machine
+- Used by RPM, APT
+
+### User Based Management
+
+- Each package is installed as a separte user
+- Files belonging to a package are found by checking user ID
+- This scheme is unique to LFS
