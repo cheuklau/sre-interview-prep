@@ -1,5 +1,6 @@
 ## Table of Contents
 [Chapter 14 - TCP/IP Networking](#Chapter-14---TCP/IP-Networking)
+[Chapter 15 - Routing](#Chapter-15---Routing)
 
 ## Chapter 14 - TCP/IP Networking
 
@@ -253,3 +254,46 @@
     * `/etc/hostname` - sets hostname
     * `/etc/network/interfaces` - sets IP address, netmask and default gateway
 - `ifup` and `ifdown` bring up and down the interfaces
+
+### Linux Network Hardware Options
+
+- `ethtool` queries and sets a network interface's media-specific parameters such as link speed and duplex
+- `ethtool eth0` to query the status of eth0 interface
+
+### Linux TCP/IP Options
+
+- Linux puts representation of kernel tunable variables into `/proc`
+- `/proc/sys/net/ipv4` shows networking variables many of which with `rate` and `max` in their names are used to thwart DDoS attacks
+- `/proc/conf` contains variables set per interface
+- To change any parametrs permanently add the appropriate variables to `/etc/sysctl.conf`
+
+### Security-Related Kernel Variables
+
+- Default security-related network behaviors in Linux:
+    * IP forwarding
+        + Host off, gateway on
+        + `ip_forward` and `conf/interface/forwarding`
+    * ICMP redirects
+        + Host obeys, gateway ignores
+        + `conf/interface/accept_redirects`
+    * Source routing
+        + Host and gateway varies
+        + `conf/interface/accept_source_route`
+    * Broadbcast ping
+        + Host and gateway ignores
+        + `icmp_echo_ignore_broadcasts`
+
+### Linux NAT and Packet Filtering
+
+- Linux implements a limited form of NAT known as Port Address Translation (PAT)
+- Instead of using a range of IP addreses, PAT multiplexes all connections onto a single address
+- `iptables` implements NAT and packet filtering
+- For NAT to work, we must enable IP forwarding in the kernel by setting `/proc/sys/net/ipv4/ip_forward` kernel variable to `1`
+- To route packets using NAT:
+    * `sudo iptables -t nat -A POSTROUTING -o eth1 -j SNAT --to 63.173.189.1`
+    * eth0 is the interface connected to internet (its IP address is 63.173.189.1)
+    * eth1 interface is the one connected too othe internal network
+    * To internet hosts, it appears all packets from hosts on the internal network have eth0's IP address
+    * NAT host receives incoming packets, looks up their true destinatioons, rewrites them with the appropriate internal network IP and sends them
+
+## Chapter 15 - Routing
