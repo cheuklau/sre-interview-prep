@@ -14,6 +14,7 @@
 - [Chapter 13 - Emergency Response](#Chapter-13---Emergency-Response)
 - [Chapter 14 - Managing Incidents](#Chapter-14---Managing-Incidents)
 - [Chapter 15 - Postmortem Culture](#Chapter-15---Postmortem-Culture)
+- [Chapter 16 - Tracking Outages](#Chapter-16---Tracking-Outages)
 
 ## Chapter 1 - Introduction
 
@@ -692,3 +693,30 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 - Encourage regular review sessions for postmortems
 - Visibly reward people for doing the right thing
 - Ask for feedback on postmortem effectiveness
+
+## Chapter 16 - Tracking Outages
+
+- Google tool Outalator receives all alerts sent by monitoring systems and allows us to annotate, group, and analyze data
+- Get insight such as number of alerts per on-call shift, ratio of actionable/non-actionable alerts, what service creates the most toil
+
+### Escalator
+
+- If alert is not acknowledged, alert is escalated to next destination e.g., primary to secondary
+
+### Outalator
+
+- Stores original alert and allows incident annotation
+- Slack for internal communication and updating status dashboard
+    * Great places to hook into a system like Outalator
+
+### Aggregation
+
+- Group multiple alerts into a single incident
+
+### Tagging
+
+- General purpose tagging to add metadata to notifications
+
+### Analysis
+
+- Use historical information to find systemic, periodic problems
