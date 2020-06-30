@@ -297,3 +297,50 @@
     * NAT host receives incoming packets, looks up their true destinatioons, rewrites them with the appropriate internal network IP and sends them
 
 ## Chapter 15 - Routing
+
+### Packet Forwarding: A Closer Look
+
+- Consider the sample network below:
+
+![Sample Network]
+(images/15-sample-network.png)
+
+- `R1` connects two networks and `R2` connects one of the networks to the internet
+- Assume `R1` and `R2` as Linux machines
+- Host `A` routing table can be found by running `netstat -rn`
+```
+Destination   Gateway        Genmask       Flags Iface
+199.165.145.0 0.0.0.0        255.255.255.0 U     eth0
+127.0.0.0     0.0.0.0        255.0.0.0     U     lo
+0.0.0.0       199.165.145.24 0.0.0.0       UG    eth0
+```
+- `eth0` is host `A` Ethernet interface
+- `lo` is the loopback interface
+- Above two usually added by `ifconfig`
+- Default route forwards all packets not addressed to `lo` or to `199.165.145.0` network to the router `R1`
+- `G` flag indicates its a Gateway which must be only one hop away
+- Suppose `A` sends packet to `B`, IP implementation looks foor a route to the target network `199.165.146` but none of the routes match
+    * Default route is invoked and packet is forwarded to `R1`
+- Ethernet packet is formed
+    * Ethernet header says from `A` to `R1` type IP
+    * IP header says from `199.165.145.17` too `199.165.146.4` type UDP (no mention of `R1`)
+    * UDP header and payload is last
+- Routing table for host `R1`
+```
+Destination   Gateway        Genmask       Flags Iface
+127.0.0.0     0.0.0.0        255.0.0.0     U     lo
+199.165.145.0 0.0.0.0        255.255.255.0 U     eth0
+199.165.146.0 0.0.0.0        255.255.255.0 U     eth1
+0.0.0.0       199.165.146.3  0.0.0.0       UG    eth0
+```
+- Two physical network interfaces
+- Default route to `R2` since that is the internet gateway
+- Routing table for host `B`
+```
+Destination   Gateway        Genmask       Flags Iface
+127.0.0.0     0.0.0.0        255.0.0.0     U     lo
+199.165.145.0 199.165.146.1  255.255.255.0 U     eth0
+199.165.146.0 0.0.0.0        255.255.255.0 U     eth0
+0.0.0.0       199.165.146.3  0.0.0.0       UG    eth0
+```
+- `B` needs an additional route because it has direct connections to two routers
