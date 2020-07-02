@@ -15,6 +15,7 @@
 - [Chapter 14 - Managing Incidents](#Chapter-14---Managing-Incidents)
 - [Chapter 15 - Postmortem Culture](#Chapter-15---Postmortem-Culture)
 - [Chapter 16 - Tracking Outages](#Chapter-16---Tracking-Outages)
+- [Chapter 17 - Testing for Reliability](#Chapter-17---Testing-for-Reliability)
 
 ## Chapter 1 - Introduction
 
@@ -720,3 +721,33 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 ### Analysis
 
 - Use historical information to find systemic, periodic problems
+
+## Chapter 17 - Testing for Reliability
+
+- SREs should quantify confidence in the systems they maintain
+- Measured by both past (monitoring data) and future (testing) reliability
+
+### Relationships Between Testing and MTTR
+
+- MTTR measures how long it takes ops to fix a problem via rollback or another action
+- If testing system identifies a bug before reaching production it is a zero MTTR bug
+- The more bugs you find with zero MTTR, the higher Mean Time Between Failure (MTBF) experienced by users
+
+### Types of Software Testing
+
+- Traditional tests are more common to evaluate correctness of software offline during development
+- Production tests are performed on live web service to determine if a deployed system is working
+
+### Traditional Tests
+
+- Unit tests
+    * Assess a separable unit of software for correctness independent of the larger software system
+- Integration tests
+    * Tests on an assembled component to verify that it functions correctly
+    * Dependency injection creates mocks of complex dependencies to test a component
+- System tests
+    * Largest scale test for an undeployed system
+    * Tests end-to-end functionality of the system
+    * Smoke tests: test simple, critical behavioro
+    * Performance tests: ensures a system doesn't degrade over time
+    * Regression tests: prevents bugs from sneaking back into codebase
