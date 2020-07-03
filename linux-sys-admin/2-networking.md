@@ -344,3 +344,17 @@ Destination   Gateway        Genmask       Flags Iface
 0.0.0.0       199.165.146.3  0.0.0.0       UG    eth0
 ```
 - `B` needs an additional route because it has direct connections to two routers
+
+### Routing Daemons and Routing Protocols
+
+- Routing protocols can adapt to changing network conditions e.g., if a link goes down, routing daemons can discover and propagate alternative routes to the networks served by that link
+- Routing daemons collect information from config files, routing tables and routing daemons oon other systems
+    * This information is merged to compute an optimal set of routes which are written back to routing table
+- Routes are computed based on routing protocol
+- Two main routing protocols:
+    1. Distance-vector protocol: each host announces how far they are from the networks they know about; hosts mark other hosts as the best gateway to a particular network; over time every hosts routing tables converge to a steady state
+    2. Link-state protocols: records traded among routers to form a connectivity map of the network from which each router can compute its own routing table
+- For routing, quality of a link is represented by a number called the cost metric
+- Path cost is the sum of the costs of each link in the path
+- Protocols for routing between automous systems must often handle routes for many networks (e.g., the entire internet), and they must deal with fact that neighboring routers are under other people's control
+- Exterior protocols do not reveal the topology inside an autonomous system so they can be thought oof as a second level of routing hierarchy that deals with collections of nets rather than individual hosts or cables
