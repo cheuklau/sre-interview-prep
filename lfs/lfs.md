@@ -744,3 +744,181 @@ make DESTDIR=/usr/pkg/libfoo/1.1 install
 - Each package is installed as a separte user
 - Files belonging to a package are found by checking user ID
 - This scheme is unique to LFS
+
+### Entering the Chroot Environment
+
+- Now we enter chroot environment to build and install final LFS system
+- Enter realm populated with temporary tools
+```
+chroot "$LFS" /tools/bin/env -i \
+ HOME=/root \
+ TERM="$TERM" \
+ PS1='(lfs chroot) \u:\w\$ ' \
+ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
+ /tools/bin/bash --login +h
+```
+- No need to use `LFS` env var anymore because all work will be restricted to the LFS filesystem
+
+### Creating Directories
+
+- Create a standard directory tree
+```
+mkdir -pv /{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
+mkdir -pv /{media/{floppy,cdrom},sbin,srv,var}
+install -dv -m 0750 /root
+install -dv -m 1777 /tmp /var/tmp
+mkdir -pv /usr/{,local/}{bin,include,lib,sbin,src}
+mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man}
+mkdir -v /usr/{,local/}share/{misc,terminfo,zoneinfo}
+mkdir -v /usr/libexec
+mkdir -pv /usr/{,local/}share/man/man{1..8}
+mkdir -v /usr/lib/pkgconfig
+case $(uname -m) in
+ x86_64) mkdir -v /lib64 ;;
+esac
+mkdir -v /var/{log,mail,spool}
+ln -sv /run /var/run
+ln -sv /run/lock /var/lock
+mkdir -pv /var/{opt,cache,lib/{color,misc,locate},local}
+```
+
+### Creating Essential Files and Symlinks
+
+- Create symbolic links that will be replaced by real files after software installation:
+```
+ln -sv /tools/bin/{bash,cat,chmod,dd,echo,ln,mkdir,pwd,rm,stty,touch} /bin
+ln -sv /tools/bin/{env,install,perl,printf} /usr/bin
+ln -sv /tools/lib/libgcc_s.so{,.1} /usr/lib
+ln -sv /tools/lib/libstdc++.{a,so{,.6}} /usr/lib
+ln -sv bash /bin/sh
+```
+- Create `/etc/passwd`:
+```
+cat > /etc/passwd << "EOF"
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/dev/null:/bin/false
+daemon:x:6:6:Daemon User:/dev/null:/bin/false
+messagebus:x:18:18:D-Bus Message Daemon User:/var/run/dbus:/bin/false
+nobody:x:99:99:Unprivileged User:/dev/null:/bin/false
+EOF
+```
+- Create `/etc/group`:
+```
+cat > /etc/group << "EOF"
+root:x:0:
+bin:x:1:daemon
+sys:x:2:
+kmem:x:3:
+tape:x:4:
+tty:x:5:
+daemon:x:6:
+floppy:x:7:
+disk:x:8:
+lp:x:9:
+dialout:x:10:
+audio:x:11:
+video:x:12:
+utmp:x:13:
+usb:x:14:
+cdrom:x:15:
+adm:x:16:
+messagebus:x:18:
+input:x:24:
+mail:x:34:
+kvm:x:61:
+wheel:x:97:
+nogroup:x:99:
+users:x:999:
+EOF
+```
+- Initialize log files:
+```
+touch /var/log/{btmp,lastlog,faillog,wtmp}
+chgrp -v utmp /var/log/lastlog
+chmod -v 664 /var/log/lastlog
+chmod -v 600 /var/log/btmp
+```
+- `wtmp` records all logins/logouts
+- `lastlog` records when each user last logged in
+- `faillog` records failed login attempts
+- `btmp` records bad login attempts
+- Install following programs:
+    * Linux API Headers
+    * Man pages
+    * Glibc
+    * Zlib
+    * Bzip2
+    * Xz
+    * File
+    * Readline
+    * M4
+    * Bc
+    * Binutils
+    * GMP: math library
+    * MPFR: functions for multiple precision math
+    * MPC
+    * Attr
+    * Acl: utilities to admininster access control lists
+    * Shadow: handles passwords in a secure way
+    * GCC: GNU compiler collection
+    * Pkg-config
+    * Ncurses
+    * Libcap: user-space interfaces to Linux kernel
+    * Sed
+    * Psmisc: displays information about running processes
+    * Iana-etc: provides data for network services and protocols
+    * Bison: parser generator
+    * flex: programs that recognize patterns in text
+    * grep
+    * bash
+    * libtool
+    * GDBM
+    * Gperf: generates perfect hash function from a key set
+    * Expat: parses XML
+    * Inetutils: program for basic networking (e.g., ifconfig, ping)
+    * perl
+    * xml
+    * Intltool
+    * Autoconf
+    * Automake
+    * Kmod: libraries and utilities for loading kernel modules
+    * Gettext
+    * Elfutils
+    * Libffi
+    * Openssl
+    * python
+    * ninja
+    * meson
+    * coreutils: shows basic system characteristics (e.g., cat, chown, date, cut, echo, head, ls, rm, rmdir, etc)
+    * check: unit testing framework for C
+    * difutils: differences between files or directories
+    * gawk
+    * findutil: programs to find files
+    * groff: programs for processing and formatting text
+    * grub: grand unified bootloaded
+    * less
+    * gzip
+    * zstd
+    * IPRoute2: program for basic and advanced IPV4-based networking
+    * kbd
+    * libpipeline
+    * make
+    * patch
+    * man-db
+    * tar
+    * texinfo
+    * vim
+    * procps-ng: programs for monitoring processes (e.g., ps)
+    * util-linux: misc utility programs (e.g., fsck)
+    * e2fsprogs: handles ext2 file system
+    * sysklogd: programs for logging system messages (e.g., syslogd)
+    * sysvinit: controls startup, running and shutdown of system
+
+### Cleaning Up
+
+- Clean up extra files:
+```
+rm -rf /tmp/*
+```
+
+## Chapter 7 - System Configuration
