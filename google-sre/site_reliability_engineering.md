@@ -751,3 +751,33 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
     * Smoke tests: test simple, critical behavioro
     * Performance tests: ensures a system doesn't degrade over time
     * Regression tests: prevents bugs from sneaking back into codebase
+
+### Production Tests
+
+- Interact with live environment
+- Rollouts entangle tests
+    * During rollout, the entire production environment is intentionally not representative of any given version of a binary that's checked into source control
+    * This can complicate test results
+- Configuration tests
+    * Config files should be version controlled
+    * For each config while, a separate config test examines production to see how a particular binary is actually configured and reports discrepancies against that file
+- Stress tests
+    * SREs should understand limits of system and its components
+    * Stress tests answer questions such as:
+        + How full can a database get before failure
+        + How many queries per second can be sent before overloaded
+- Canary tests
+    * Subset of servers is upgraded to a new version and left in incubation period
+    * If passes quality assurance, release continues until all servers are upgraded
+    * If things go awry modified servers are rolled back to known good state
+
+### Creating a Test and Build Environment
+
+- As an SRE for a built codebase, ask yourself:
+    * Can you prioritize the codebase?
+    * Are there particular classes or functions that are mission-critical?
+    * Which APIs are teams integrating against?
+- Document all reported bugs as test cases
+- Set up testing infrastructure
+- Set up a continuous build system that runs test every time code is submitted
+- Use tools to visualize the level of test coverage needed
