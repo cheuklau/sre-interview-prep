@@ -358,3 +358,25 @@ Destination   Gateway        Genmask       Flags Iface
 - Path cost is the sum of the costs of each link in the path
 - Protocols for routing between automous systems must often handle routes for many networks (e.g., the entire internet), and they must deal with fact that neighboring routers are under other people's control
 - Exterior protocols do not reveal the topology inside an autonomous system so they can be thought oof as a second level of routing hierarchy that deals with collections of nets rather than individual hosts or cables
+
+### Protocols on Parade
+
+- Routing information protocol (RIP)
+    * Distance vector protocols that use hop counts as cost metric
+    * Profligate use of broadcasting
+    * Good job of handling changing network
+    * Slow to stabilize after a link goes down
+- Open shortest path first (OSPF)
+    * Works well for large, complicated topologies
+    * Advantage over RIP includes ability to manage several paths to a single destination
+    * No particular cost metric
+- Enhanced Interior Gateway Routing Protocol (EIGRP)
+    * Runs only on Cisco routers
+    * Distance-vector protocol designed to avoid looping and convergence problems
+- IS-IS
+    * ISO's answer to OSPF
+- Router Discovery Protocol and Neighbor Discovery Protocol
+    * Uses ICMP messages sent to IP multicast to aanoounce and learn about other routes on a network
+- Border Gateway Patrol (BGP)
+    * Exterior routing protocol (manages traffic among autonomous systems)
+    * Standard protocol used for Internet backbone routing
