@@ -781,3 +781,21 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 - Set up testing infrastructure
 - Set up a continuous build system that runs test every time code is submitted
 - Use tools to visualize the level of test coverage needed
+
+### Testing at Scale
+
+- Unit tests have a short list of dependencies whereas a release test may depend on many moving parts
+- Practical testing envs select branch points among versions and merges
+- SRE tools also need to be tested
+- Software that bypass usual heavily tested API could destroy a live service
+- Automation tool testing is more subtle
+    * Test whether internal state (seen through API) is constant across operation
+- Disaster recovery tools can be designed to operate offline
+    * Compute checkpoint state and push it to be loadable by existing non-disaster validation tools
+- Statistical tests e.g., Chaos Monkey are not repeatable but may be useful for:
+    * Providing log of all randomly selected actions
+    * Refactor log as a release test
+    * Variatioons in errors help pinpoint suspicious areas of the code
+    * Later runs may demonstrate more severe failures leading to escalation of the bug severity
+- Most tests are simple and give engineers interactive feedback before context switch
+- Batch tests require orchestration between many binaries and do not offer interactive feedback; instead of context switch, tell engineer that the coode is not ready for review
