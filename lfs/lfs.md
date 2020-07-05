@@ -5,6 +5,7 @@
 - [Chapter 4 - Final Preparations](#Chapter-4---Final-Preparations)
 - [Chapter 5 - Constructing a Temporary System](#Chapter-5---Constructing-a-Temporary-System)
 - [Chapter 6 - Installing Basic System Software](#Chapter-6---Installing-Basic-System-Software)
+- [Chapter 7 - System Configuration](#Chapter-7---System-Configuration)
 
 ## Chapter 1 - Introduction
 
@@ -922,3 +923,90 @@ rm -rf /tmp/*
 ```
 
 ## Chapter 7 - System Configuration
+
+### Introduction
+
+- Booting involves several tasks:
+    * Mount virtual and real file systems
+    * Initialize devices
+    * Activate swap
+    * Check file systems
+    * Mount any swap partitions or files
+    * Set system clock
+    * Bring up network
+    * Start daemons
+    * Perform user tasks
+
+### System V
+
+- System V is a classic boot process
+- Consists of a small program `init` that sets up basic programs e.g., `login` and runs a script
+- Script called `rc` controols executioons of a set of other scripts that performs tasks to initialize the system
+- `init` controlled by `/etc/inittab` file organized into run files:
+    0. halt
+    1. single user
+    2. multi-user, no networking
+    3. full multi-user
+    4. user definable
+    5. full multi-user with display
+    6. reboot
+- Advantages:
+    * Established, easy to customize
+- Disadvantages:
+    * Slower to boooot
+    * Serial processing of boot tasks
+    * Does not directly support advanced features e.g., control groups (cgroups) and per-user fair share scheduling
+    * Adding scripts requires manual, static sequencing decisions
+
+### LFS-Bootscripts
+
+- Contains set of scripts to start/stop LFS system at bootup/shutdown
+- Install LFS-bootscripts which include:
+    * checkfs: chechks integrity of filesystem
+    * cleanfs: removes files that should not be preserved between reboots
+    * console: loads keymap table for keyboard layout
+    * functions: common functions e.g., error and status checking
+    * halt: halts the system
+    * ifdown: stops network device
+    * ifup: starts network device
+    * localnet: sets up system hostname and loopback device
+    * modules: loads kernels in `/etc/sysconfig/moodules`
+    * mountfs: mounts filesystems
+    * network: sets up network interfaces
+    * rc: master run-level control script; runs all bootscripts one-by-one
+    * reboot: reboots the system
+    * sendsignals: makes sure every process is terminated before system reboots or halts
+    * setclock
+    * swap: enables and disables swap files and partitions
+    * sysctl: loads system config values from `/etc/sysctl.conf`
+    * sysklogd: starts and stops system and kernel log daemons
+    * template
+    * udev: prepares `/dev` directory and starts `Udev`
+- Install in `/etc/rc.d`, `/etc/init.d`, `/etc/sysconfig`, `/lib/services`, `/lib/lsb`
+
+### Overview of Device and Moodule Handling
+
+- Linux traditionally used a static device creation method
+- Device nodes created under `/dev` with a `MAKEDEV` script which contains a number of calls to the `mknood` program with the device numbers for every possible device that might exist
+- With `UDev` only devices detected by kernel gets device noodes created for them
+    * Stored on a `devtmpfs` file system
+
+### Udev Implementation
+
+#### Sysfs
+
+- `sysfs` knows about which devices are present on the system because drivers compiled into the kernel directly registers their objects with `sysfs`
+- Once `sysfs` is mounted on `/sys` data which the drivers reguster are available to othe userspace processes and to `udevd`
+
+#### Device Node Creation
+
+- Device files are created by kernel throuogh `devtmpfs`
+- Any driver that wants to register a device noode goes through `devtmpfs`
+- When a `devtmpfs` instance is mounted on `/dev` the device node will be created with name, permission, and owner
+- Later kernel will send a uevent to `udevd` which will create additional symlinks to device node or change its permissions, owner or group
+    * Based on rules in `/etc/udev/rules.d`
+
+#### Handling Dynamic Devices
+
+- When you plug in a USB MP3 player, kernel recognizes device is connected and generates a uevent
+- Uevent is then handled by `udevd` as described above
