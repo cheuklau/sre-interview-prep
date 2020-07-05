@@ -16,6 +16,7 @@
 - [Chapter 15 - Postmortem Culture](#Chapter-15---Postmortem-Culture)
 - [Chapter 16 - Tracking Outages](#Chapter-16---Tracking-Outages)
 - [Chapter 17 - Testing for Reliability](#Chapter-17---Testing-for-Reliability)
+- [Chapter 18 - Software Engineering in SRE](#Chapter-18---Software-Engineering-in-SRE)
 
 ## Chapter 1 - Introduction
 
@@ -799,3 +800,8 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
     * Later runs may demonstrate more severe failures leading to escalation of the bug severity
 - Most tests are simple and give engineers interactive feedback before context switch
 - Batch tests require orchestration between many binaries and do not offer interactive feedback; instead of context switch, tell engineer that the coode is not ready for review
+
+## Chapter 18 - Software Engineering in SRE
+
+- Examples include binary rollout mechanisms, monitoring
+- SRE develop internal tools
