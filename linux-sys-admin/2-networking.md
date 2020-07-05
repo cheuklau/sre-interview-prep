@@ -380,3 +380,21 @@ Destination   Gateway        Genmask       Flags Iface
 - Border Gateway Patrol (BGP)
     * Exterior routing protocol (manages traffic among autonomous systems)
     * Standard protocol used for Internet backbone routing
+
+### Routing Strategy Selection Criteria
+
+- Routing can be managed at four levels of complexity:
+    1. No routing
+    2. Static routing
+    3. Mostly static but clients listen for RIP updates
+    4. Dynamic routing
+- Rule of thumbs:
+    * Standalone network requires no routing
+    * If network has one way out, clients should have static default route to the lone gateway
+    * Gateway with multiple networks on one side and internet oon the other should have explicit static routes pointing to former and default route to the latter
+    * RIP works okay and is widely supported
+    * EIGRP and OSPF are equally functional but EIGRP is proprietary to Cisco
+    * Roouters connected to the internet through multiple upstream provider must use BGP
+- For medium-sized site with stable local structure and connection to ooutside internet, use a combination of static and dynamic routing
+    * Routers within loocal structure use static, forwarding unknown packets to a default machine that understands outside world and does dynamic routing
+-
