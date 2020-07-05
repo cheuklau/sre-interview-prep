@@ -302,7 +302,7 @@
 
 - Consider the sample network below:
 
-![Sample Network](/images/15-sample-network.png)
+![Sample Network](images/15-sample-network.png)
 
 - `R1` connects two networks and `R2` connects one of the networks to the internet
 - Assume `R1` and `R2` as Linux machines
