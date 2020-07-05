@@ -805,3 +805,43 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
 
 - Examples include binary rollout mechanisms, monitoring
 - SRE develop internal tools
+- Staff SRE teams with a mix of traditional swe and system engineers
+- Example: Auxom, SRE tool to automate capacity planning
+    * Traditional capacity planning involved:
+        1. Collect demand forcasts
+        2. Devise build and allocation plans
+        3. Review and sign off
+        4. Deploy and configure resources
+    * Traditional capacity planning easily disrupted by minor changes
+        + Increase customer demand
+        + Change in delicery date
+    * Traditional capacity planning is laborious and imprecise
+    * Solution is intent-based capacity planning
+        + Specify the requirements not the implementation
+        + Programmatically encode dependencies and parameters of a service's need
+        + Use that encoding to auto-generate an allcoation plan that details which resources go to with service in which cluster
+        + If demand changes, we auto-generate a new plan
+    * Intent is rationale for how a service owner wants to run their service
+    * Different degrees of flexibility:
+        1. I want 50 cores in clusters X, Y and Z
+        2. I want 50 cores in any 3 clusters
+        3. I want to meet service demand in each geographic regioon and have `N+2` redundancy
+        4. I want to run service at 5 nines of reliability
+    * In order to capture a service's intent, we need:
+        + Dependencies e.g., oother services, infrastructure
+        + Performance metrics
+        + Prioritization between services
+    * Auxom configuration language engine takes in:
+        1. Intent config (dependencies, constraints, priorities)
+        2. Performance data
+        3. Per-service demand forecast data
+    * Auxom solver takes in:
+        1. Auxom configuration language engine output
+        2. Resource supply
+        3. Resource pricing
+    * Auxom solver outputs allocation plan
+- Requirements and implementation
+    * Don't focus on perfection of solution, instead iterate
+    * Raise awareness and drive adoption
+    * Identify appropriate customers
+    * Design software to handle a myriad of input data sources
