@@ -17,6 +17,7 @@
 - [Chapter 16 - Tracking Outages](#Chapter-16---Tracking-Outages)
 - [Chapter 17 - Testing for Reliability](#Chapter-17---Testing-for-Reliability)
 - [Chapter 18 - Software Engineering in SRE](#Chapter-18---Software-Engineering-in-SRE)
+- [Chapter 19 - Load Balancing at the Frontend](#Chapter-19---Load-Balancing-at-the-Frontend)
 
 ## Chapter 1 - Introduction
 
@@ -845,3 +846,30 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
     * Raise awareness and drive adoption
     * Identify appropriate customers
     * Design software to handle a myriad of input data sources
+
+## Chapter 19 - Load Balancing at the Frontend
+
+- Use traffic load balancing to decide which of the many machines in our datacenters will serve a particular request
+- Two common scenarios:
+    1. search request: want low latency; sent to nearest datacenter
+    2. video upload: want high throughput; sent to under-utilized link to maximize throughput at expense of latency
+- Within datacenter we want to distribute load to maximize utilizatioon
+
+### Load Balancing Using DNS
+
+- Return multiple A or AAAA records in DNS reply and let client pick an IP arbitrarily
+- Usually a recursive DNS server between users and authoritative nameservers
+    * Proxies user queries and acts as a caching layer
+    * IP authoritative nameserver sees does not belong to the user, so the IP it provides is shortest distance for recursive resolver
+    * EDNS0 extension sends information about client subnet too authoritative namserver so it can optimize for user
+    * Cached responses are used within TTL
+- Proximity may not always be the best route; must consider oother factors e.g., datacenter capacity, state of network connectivity, etc
+
+### Load Balancing at the Virutal IP Address
+
+- Most important part of VIP is the netowork load balancer
+    * Receives packets and forwards them to one of the machines behind the VIP
+- VIP strategies:
+    1. Send to the least loaded backend; breaks down for stateful protocols; use consistent hashing to keep track of which machine belongs to connections
+- Current VIP load baalncing solution uses packet encapsulation
+    * NLB puts forwarded packet into another IP packet with Generic Routing Encapsulation with backend address as destination; NLB and backend no longer need to be in the same broadcast domain
