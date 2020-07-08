@@ -1,6 +1,7 @@
 ## Table of Contents
 [Chapter 14 - TCP/IP Networking](#Chapter-14---TCP/IP-Networking)
 [Chapter 15 - Routing](#Chapter-15---Routing)
+[Chapter 16 - Network Hardware](#Chapter-16---Network-Hardware)
 
 ## Chapter 14 - TCP/IP Networking
 
@@ -396,4 +397,15 @@ Destination   Gateway        Genmask       Flags Iface
     * Roouters connected to the internet through multiple upstream provider must use BGP
 - For medium-sized site with stable local structure and connection to ooutside internet, use a combination of static and dynamic routing
     * Routers within loocal structure use static, forwarding unknown packets to a default machine that understands outside world and does dynamic routing
--
+
+### Routing Daemons
+
+- Use of routing daemons is uncommon on production systems
+- Detailed routers are simpler, more reliable, more secure and faster
+- Common software options
+    * `routed`: obsolete RIP implementation
+    * `gated`: first-generation multiprotocol routing daemomn
+    * `Quagga`: mainstream routing daemon; go-to for Linux
+    * `XORP`: router in a box
+
+## Chapter 16 - Network Hardware
