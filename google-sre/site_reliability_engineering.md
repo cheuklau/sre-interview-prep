@@ -18,6 +18,7 @@
 - [Chapter 17 - Testing for Reliability](#Chapter-17---Testing-for-Reliability)
 - [Chapter 18 - Software Engineering in SRE](#Chapter-18---Software-Engineering-in-SRE)
 - [Chapter 19 - Load Balancing at the Frontend](#Chapter-19---Load-Balancing-at-the-Frontend)
+- [Chapter 20 - Load Balancing in the Datacenter](#Chapter 20 - Load Balancing in the Datacenter)
 
 ## Chapter 1 - Introduction
 
@@ -873,3 +874,26 @@ Toil can cause career stagnation, low morale, create confusion, slow progress, s
     1. Send to the least loaded backend; breaks down for stateful protocols; use consistent hashing to keep track of which machine belongs to connections
 - Current VIP load baalncing solution uses packet encapsulation
     * NLB puts forwarded packet into another IP packet with Generic Routing Encapsulation with backend address as destination; NLB and backend no longer need to be in the same broadcast domain
+
+## Chapter 20 - Load Balancing in the Datacenter
+
+### Ideal Case
+
+- Ideally, load for a given service is spread evenly over all backend tasks
+- Send traffic to datacenter until the moost loaded task reaches its capacity limit
+
+### Identifying Bad Tasks
+
+- If a given backend tasks becomes overloaded and requests start piling up, clients will avoid that backend, and workload spreads
+- In reality, this only protects against extreme forms of overload; easy for backends to become overloaded before limit is reached
+- From client perspective, a backend task can be in the following states:
+    1. Healthy
+    2. Refusing connections
+    3. Lame duck: backend is listening oon port and can serve but is explicitly asking clients to stop sending requests
+- Main advantage of lame duck state is that it simplifies clean shutdown which avoids serving errors to unlucky requests that are assigned to backend tasks that are shutting down
+- Shutting down a backend tasks with active requests without serving errors:
+    1. Job scheduler sends SIGTERM to backend task
+    2. Backend task enters lame duck state so clients stop sending new requests to it
+    3. Any ongoing request before going into lame duck state is executed normally
+    4. As responses go back to clients, number of active requests against backend gradually decreases to zeroo
+    5. Backend task exits cleanly or is killed by scheduler
