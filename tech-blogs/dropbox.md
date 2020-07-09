@@ -41,3 +41,17 @@
 - We now know all user's info behind DNS resolvers and latency towards all PoPs
 - Can determine what is best PoP for most users behind this DNS resolver
 - Map IP address/subnets of resolvers to PoP IP
+
+## Continuous Integration and Deployment with Bazel
+
+- Dropbox server-side repo lives in a single repo
+- Used to run entire test corpus on every commit
+- However, no longer tenable due to large number of tests
+- Pointless and wasteful execution of tests that can't be affected by a particular change
+- Address problem with build and test system called Bazel
+    * Views repo as a set of targets and dependencies between them
+    * Knows dependency graph between all source files and tests in the repo
+    * Bazel computes set of tests affected by a commit
+- Futher save resources by rolling up commits that affect same areas into a single test
+    * This batching could break detection but automated breakage detection system called Athena can detect which tests caused the breakage
+- Deployment system distributes software to hosts in the form of SquashFS images
