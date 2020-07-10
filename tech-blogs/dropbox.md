@@ -55,3 +55,44 @@
 - Futher save resources by rolling up commits that affect same areas into a single test
     * This batching could break detection but automated breakage detection system called Athena can detect which tests caused the breakage
 - Deployment system distributes software to hosts in the form of SquashFS images
+
+## Monitoring Server Applications with Vortex
+
+- Monitoring systems operate across 1000 machines with 60000 alerts
+- Speed query speed by caching >200,000 queries
+- Vortex is server-side monitoring system
+    * Kafka for queueing ingested metrics
+    * Aggregate across tags oover time (probably Kafka Stream)
+    * Write results back to Kafka
+    * Processes consume data from Kafka and store in memory for evaluating alerts, on-disk RocksDB (within last day) and HBase (older than one day)
+- Issues:
+    * Kafka and HBase issues required manual recovery
+    * Some code may innudate ingestion pipeline
+    * Operations and deployments of monitoring infra can cause data loss
+    * Poor query performance and expensive queries not properly isolated
+- Design goals
+    * Completely horizontally-scalable ingestion - just add nodes to the deployment
+    * Silent deployments
+    * No single point of failures
+    * Well defined ingestion limits - no single individual service should innudate ingestion
+    * Multi-tenant query system - individual queries should not be able to disrupt monitoring system
+    * Metrics scale as service scales
+- Metric types
+    * Counter - number of occurrences over time
+    * Gauge - value at current time
+    * Topology - identify the node thats logging metrics
+    * Histogram - provide percentile distributions for values
+- Design
+    * NodeCollector
+        + Vortex metrics stored in ring buffer in each local process
+        + Poll-based metric collection on two tiers
+        + First tier is NodeCollector - runs oon every node, polls other processes of nodes and aggregate metric into per-node total
+        + NodeCollector polled by MetricCollector which writes data to storage
+        + NodeCollector only poll processes when they themeselves are polled, so they are stateless
+    * MetricCollector
+        + MetricCollector polls NodeCollectors every 10 seconds
+        + Internally buffers the metrics for four minutes before flushing to storage
+            1. Reduces write load on Cassandra for storage
+            2. Allows data to enter in one arrangement and leave in another (grouped by metric name rather than by node)
+    * System-defined Tags
+        +
