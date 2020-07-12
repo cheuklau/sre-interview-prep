@@ -1,0 +1,6 @@
+This is a test of the phone number scrubber.
+Here is something close to a phone number 12-49-1098 and here
+is a valid phone number 815-294-2039
+Will the script be able to scrub 918-203-4950 embedded in a sentence or
+948-102-3049 that starts at the beginning of the sentence?
+Good luck!
