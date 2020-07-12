@@ -95,4 +95,21 @@
             1. Reduces write load on Cassandra for storage
             2. Allows data to enter in one arrangement and leave in another (grouped by metric name rather than by node)
     * System-defined Tags
-        +
+        + Tag each emitted metric with two additional tags:
+            1. ID of the node that emitted metric
+            2. Tag each metric with a namespace which is the name of task that emitted metric
+    * High availability
+        + Split MetricCollector into groups
+    * Limits
+        + Per-node and per-process limits on metrics that can be exported
+    * Serving queries
+        + Vortex query subsystem has two services:
+            1. Query cache
+            2. Query API
+    * Loading data
+        + Load from cache
+        + Load from storage
+        + Load unflushed data from MetricCollector
+    * Query language
+        + Own query language for Vortex
+- Job orchestrator has replaced failed hoosts with no human intervention or disruption in service
