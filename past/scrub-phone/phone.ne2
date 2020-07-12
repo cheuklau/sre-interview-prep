@@ -1,6 +1,0 @@
-This is a test of the phone number scrubber.
-Here is something close to a phone number 12-49-1098 and here
-is a valid phone number XXX-XXX-XXXX
-Will the script be able to scrub XXX-XXX-XXXX embedded in a sentence or
-XXX-XXX-XXXX that starts at the beginning of the sentence?
-Good luck!
