@@ -409,3 +409,33 @@ Destination   Gateway        Genmask       Flags Iface
     * `XORP`: router in a box
 
 ## Chapter 16 - Network Hardware
+
+- Placeholder
+
+## Chapter 17 - DNS: The Domain Name System
+
+- Placeholder
+
+## Chapter 18 - The Network File System
+
+- Placeholder
+
+## Chapter 19 - Sharing System Files
+
+- Placeholder
+
+## Chapter 20 - Electronic Mail
+
+- Placeholder
+
+## Chapter 21 - Netwoork Management Debugging
+
+- Placeholder
+
+## Chapter 22 - Security
+
+- Placeholder
+
+## Chapter 23 - Web Hosting
+
+- Placeholder
