@@ -41,35 +41,40 @@
 # array sort it, then use the sorted array to get
 # the values in the dictionary to print.
 #
-# Key idea
+# Key idea 1
 # Use csv library DictReader to read in a csv file.
 # Each item in the DictReader object contains
 # a row of the csv file mapped to the header.
 #
+# Key idea 2
+# Use collections.Counter instead of a dict to store
+# the results because you have to print the results in
+# a sorted order and a dict cannot be sorted.
 
 import csv
 import math
+import collections
 
-# Read in the first dataset
+# Read in the first dataset.
 leg_length = {}
 with open('dataset1.csv') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         leg_length[row['NAME']] = row['LEG_LENGTH']
 
-# Read in the second dataset
-speed_dict = {}
+# Read in the second dataset and calculate speed.
+# Store the results in a Counter object.
+result = collections.Counter()
 speed_arry = []
 with open('dataset2.csv') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         if row['STANCE'] == 'bipedal' and row['NAME'] in leg_length:
             tmp = (float(row['STRIDE_LENGTH'])/float(leg_length[row['NAME']])-1.0)*math.sqrt(float(leg_length[row['NAME']])*9.81)
-            speed_dict[str(tmp)] = row['NAME']
-            speed_arry.append(tmp)
+            result[row['NAME']] = tmp
 
-speed_arry.sort()
-for speed in speed_arry:
-    print speed_dict[str(speed)]
+# Print the results
+for name, speed in result.most_common():
+    print name
 
 
