@@ -313,7 +313,97 @@ close(8)
 
 ## Chapter 6 - The Filesystem
 
-- Placehoolder
+### Pathnames
+
+- Placeholder
+
+### Filesystem Mounting and Unmounting
+
+- Filesystems are attached to the tree with the `mount` command
+- `mount` maps a directory within the existing file tree (mount point) too the root of the newly attached filesystem
+- Example: `sudo mount /dev/sda4 /users`
+    * Installs filesystem stored on disk partition `/dev/sda4` under path `/users`
+    * `ls /users` to see filesystem's coontents
+- `/etc/fstab` to view list of filesystems currently mounted
+- `umount` to detach a filesystem but will not work if in use
+- `fuser` to find which process hold references to that filesystem
+- Example: `fuser -c /usr` output:
+```
+/usr: 157tm 315ctom 474tom 5049tom
+```
+- The above shows the pids along with some system dependent codes e.g., `t` means process is executing a file
+- Alternative to `fuser` is `lsof`
+
+### Organization of the File Tree
+
+- Standard directories and contents:
+    * `/bin` = core os commands
+    * `/boot` = kernel and files to load the kernel
+    * `/dev` = device entries
+    * `/etc` = critical startup and config files
+    * `/home` = default home directories for users
+    * `/kernel` = kernel components
+    * `/lib` = libraries, shared libraries
+    * `/media` = mount points for filesystems of removable media
+    * `/mnt` = temp mount points
+    * `/opt` = optional software packages
+    * `/proc` = running processes info
+    * `/root` = home directory for super user
+    * `/sbin` = commands for minimal system operability
+    * `/tmp` = temp files
+    * `/usr` = hierarchy of secondary files and commands
+        + `/bin` = most commands and executables
+        + `/include` = header files for compiling C programs
+        + `/lib` = libraryies
+        + `/local` = software you write or install
+        + `/sbin` = less essential commands for admin and repair
+        + `/share` = items common to multiple systems
+        + `/src` = source code for nonlocal software
+        + `/tmp` = more temp space
+    * `/var` = system specific data and configs
+        + `/adm` = setup records
+        + `/log` = various system log files
+        + `/spool` = spooling directories for printers, mail, etc
+        + `/tmp` = more temp space
+
+### File Types
+
+- Types of files; symbol used by `ls`, created by; removed by
+    1. Regular files; `-`; editors, `cp`, etc; `rm`
+        * Series of bytes
+        * Text files, data files, executable prooograms, shared libraries
+    2. Directory; `d`; `mkdir`; `rmdir`
+        * Contains named references to other files
+        * `ln oldfile newfile` to create hard links
+    3. Character device file; `c`; `mknod`; `rm`
+        * Device files let programs communicate with system's hardware and peripherals
+        * Kernel loads driver software for each of the system's devices
+        * Presents a standard communication interface that looks like a regular file
+        * Allow drivers to do their own input and output buffering
+        * Files typically in `/dev`
+    4. Block device file; `b`; `mknod`; `rm`
+        * Files used by drivers that handle I/O in large chunks
+    5. Local domain socket; `s`; `socket(2)`; `rm`
+        * Coonnections between processes that allow process communication
+        * Local domain sockets accessible oonly from local host and are referred to throuogh a filesystem object rather than a network port
+        * Created with `socket` system call
+        * Removed with `rm` or `unlink` system call
+        * NOT THE SAME AS NETWORK SOCKETS
+    6. Named pipe; `p`; `mknod`; `rm`
+        * Allow communication between two processes on the same host
+    7. Symbolic link; `l`; `ln -s`; `rm`
+        * Soft link points to oa file by name
+        * Hard link is a direct reference whereas a soft link is a reference by name
+        * Soft links are distinct from the files they point to
+- Use `rm -i` to get confirmation before deletion
+
+### File Attributes
+
+- Placeholder
+
+### Access Control Lists
+
+- Placeholder
 
 ## Chapter 7 - Adding New Users
 
