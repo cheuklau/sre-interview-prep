@@ -423,7 +423,41 @@ close(8)
 
 ## Chapter 11 - Syslog and Log Files
 
-- Placeholder
+- `syslog` log files contain events from multiple sources e.g., kernel and network daemon
+
+### Finding Log Files
+
+- Many randomly-named log files
+- By default most are found in `/var/log`
+- Logs generally owned by `root`
+- Less privileged daemons e.g., `httpd` may require write access and set the ownership appropriately
+- `/etc/syslog.conf` sets config
+- Keep separate partition for `/var` or `/var/log` too avoid filling up the disk and bringing down the system
+
+### Files Not to Manage
+
+- `wtmp` contains a record oof user's logins/logouts as well as reboots/shut downs
+- `lastlog` records only time of last login of each user
+- `utmp` keep record of each user currently logged in
+- `syslog` manages:
+    * `auth.log` for `sudo`
+    * `cron`
+    * `daemon.log`
+    * `debug`
+    * `kern.log`
+    * `mail`
+    * `messages`
+    * `syslog`
+    * `warn`
+- Logs that are set by config files:
+    * `apt`
+    * `boot.log`
+    * `httpd`
+
+### Vendor Specifics
+
+- Use `logrotate` for rotating, truncating and managing logs
+- New software packages can add a config file to `/etc/logrotate.d` to set up log management strategy
 
 ## Chapter 12 - Software Installation and Management
 
