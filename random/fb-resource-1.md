@@ -106,3 +106,101 @@ https://syedali.net/engineer-interview-questions/
 - This is done by using `sigprocmask()` system call to mask certain signals.
 - It is possible process was masking `SIG-HUP`.
 - It will be handled once the signal is unblocked from the pending.
+
+# Networking
+
+## Define TCP slow start
+
+- Congestion control algorithm.
+- Increases TCP congestion window each time an `ACK` is received until an `ACK` is not received.
+- This prevents the link between the sender and receiver from being overloaded.
+- Note: This is different than the sliding window maintained by receiver which exists to prevent the receiver from being overloaded.
+
+## Name a few TCP connection states
+
+- `LISTEN` - server is listening on a port e.g., HTTP 80
+- `SYN-SENT` - sent a `SYN` request, waiting for a response
+- `SYN-RECEIVED` - server waiting for an `ACK` occurs after sending an `ACK` from server
+- `ESTABLISHED` - 3 way TCP handshake has completed
+
+## Define the various protocol states of DHCP
+
+- Dynamic host configuration protocol (DHCP) is a network management protocol used on IP networks where a DHCP server dynamically assigns IP addresses and other network configuration parameters to each device on the network so they can communicate with other IP networks.
+- `DHCPDISCOVER`: client to server: broadcast to locate server
+- `DHCPOFFER`: server to client: offer client configuration parameters
+- `DHCPREQUEST`: client to server: request HDCP configuration from server
+- `DHCPACK`: server to client: actual configuration parameters
+- `DHCPNAK`: server to client: indicates client's notion of network address is wrong
+- `DHCPDECLINE`: client to server: address is already in use
+- `DHCPRELEASE`: client to server: giving up IP address
+- `DHCPINFORM`: client to server: asking for local config parameters
+
+## How do you figure out the network and broadcast address of a network given a netmask?
+
+- A netmask determines the size of a subnet.
+- The first address is the network address.
+- The last address is the broadcast address.
+- All addresses in between are the host addresses.
+- Example: `192.128.64.7/24`
+    * Here `/24` represents the netmask which corresponds to `255.255.255.0`
+    * In this case, the whole of the last octet consists of host bits.
+    * Therefore, the host address is `192.128.64.0` and the broadcast address is `192.128.64.255`
+    * Hosts can be between `192.128.64.1` and `192.128.64.254`
+
+## Describe a UDP and TCP packet fields
+
+- UDP packets (32 bits total)
+    * Source port (16 bits)
+    * Destination port (16 bits)
+- TCP packets
+    * Source port (16 bits)
+    * Destination port (16 bit)
+    * Sequence number (32 bits) - number assigned to the first byte of data in the current message
+    * Acknowledge number (32 bits) - value of next sequence number that sender of segment is expecting to receive if `ACK` control bit is set
+    * Data offset - number of 32-bit words contained in TCP header
+    * Reserved (6 bits) - for future use
+    * Flags (6 bits)
+        1. `URG` - urgent data placed
+        2. `ACK` - acknowledgement number is valid
+        3. `PSH` - data should be passed to application as soon as possible
+        4. `RST` - reset connection
+        5. `SYN` - synchronize sequence numbers to indicate connection
+        6. `FIN` - sender has finished sending data
+    * Window (16 bits) - size of sender's receive window (buffer space available for incoming data)
+    * Checksum (16 bits) - if header was damaged in transit
+    * Urgent pointer (16 bits) - points to first urgent data byte in packet
+    * Options - various TCP options
+    * Data - contains upper-layer information
+
+## Difference between TCP and UDP
+
+- Reliable vs. unreliable
+- Ordered vs. unordered
+- Heavyweight vs. lightweight
+- Streaming
+- Header size
+- Examples: TCP used in HTTP, UDP used in DNS, FTP
+
+## What are the different kinds of NAT available?
+
+- Network address translation (NAT) is a method of remapping an IP address space into another by modifying network address information in the IP header of packets while they are in transit across a traffic routing device.
+- One internet-routable IP of a NAT gateway can be used for an entire private network.
+- Source network address translation (SNAT) is when source IP is RFC 1918 (private network) and is changed to non-RFC 1918 (public network) e.g., home laptop connecting to router which changes source address of TCP/IP packet to be it's external public IP.
+- Destination network address translation (DNAT) is when the destination IP is changed e.g., router changes destination address of TCP/IP packet to be the private IP.
+
+## Explain the SOA record in DNS
+
+- Start of Authority (SOA) record is a DNS resource record containing administrative information for a domain
+- To find the DNS SOA record: `dig rackspace.com +nssearch`
+- This will return:
+```
+SOA ns.rackspace.com. hostmaster.rackspace.com. 1392389079 300 300 1814400 300 from server 69.20.95.4 in 12 ms.
+```
+- `ns.rackspace.com` is the primary name server for the domain
+- `hostmaster.rackspace.com` is the email for the domain
+- `1392389079` is the revision number which changes every time you update the domain
+- `300` is the refresh time which is the number of seconds before the zone refreshes
+- `300` is the retry time which is the number of seconds before a failed refresh is retried
+- `1814400` is the time in seconds before data is considered unreliable
+- `300` is the minimum TTL that applies to all resource records in the zone
+- Note: DNS zone is a distinct part of a domain namespace delegated to a legal entity i.e., person, company
