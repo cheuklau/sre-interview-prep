@@ -433,3 +433,15 @@ flush privileges;
 - `sysctl` to make changes at runtime
     * `sysctl -a` to show all set parameters
     * `sysctl -w parameter=value` to set parameter to a new value
+
+# Security
+
+## How does SSL work?
+
+- Secure socket layer (SSL) renamed to TLS.
+- Secure way of communicating through a network.
+- TLS works at session and presentation layer of OSI.
+- Asymmetric encryption takes place at session layer.
+- Symmetric cipher and session keys used at presentation layer.
+- Encrypt data across network using public key encryption first followed by a shared key.
+- Server certificate authentication done through a certificate authority.
