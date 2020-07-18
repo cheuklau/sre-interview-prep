@@ -334,3 +334,40 @@ $ ls -i a c
 - Block devices are buffered and read/written in fixed sizes e.g., hard disks, cd-roms.
 - Character devices read/write one character at a time and are not buffered e.g., from keyboard or a tty (terminal).
 
+# HTTP
+
+## Common HTTP response codes
+
+- 200: OK, request succeeded
+- 500: internal server error
+- 403: forbidden
+- 301: permanent redirect
+- 302: temporary redirect
+
+## What is an HTTP cookie
+
+- Small piece of data server sends to a browser.
+- Browser stores it in its cookie cache.
+- Cookie used to maintain session information sice HTTP is stateless.
+- Cookies can be used to store encrypted passwords.
+- Browser sends cookies back to the server when they make a connection.
+
+## HTTP methods
+
+- Ways of communication between server and client.
+- Common examples:
+    * GET - retrieve information identified by the request URI.
+    * PUT - requests that enclosed entity be stored under the supplied request URI.
+    * POST - request that origin server accept the entity enclosed in the request as a new subordinate of the resource identified by the request URI e.g., posting to a messageboard.
+    * HEAD - identical to GET except server must not return a message-body in the response.
+    * CONNECT - use with a proxy that can dynamically switch to being a tunnel.
+
+## HTTP headers
+
+- Common components of HTTP requests and responses.
+- Colon separated name-value pairs in clear text.
+- Common headers:
+    * Accept specifying media types that are acceptable for the response e.g., text/html.
+    * Cache-control specifying where to cache or not the contents of a page.
+    * Control-length specifying size of the content.
+    * Host which is the domain name of the server.
