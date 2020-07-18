@@ -204,3 +204,133 @@ SOA ns.rackspace.com. hostmaster.rackspace.com. 1392389079 300 300 1814400 300 f
 - `1814400` is the time in seconds before data is considered unreliable
 - `300` is the minimum TTL that applies to all resource records in the zone
 - Note: DNS zone is a distinct part of a domain namespace delegated to a legal entity i.e., person, company
+
+# Filesystems
+
+## List open file handles
+
+- File handles can be regular files, directories, block/character devices, sockets, pipes, etc.
+- File handes are objects that a process uses to read or write to an open file, open network sockets, etc.
+- Each process has its own file descriptor table.
+- `lsof -p <pid>`
+- `ls /proc/<pid>/fd`
+
+## What is an inode?
+
+- Data structure in Unix that contains metadata about a file.
+- Data includes:
+    * mode
+    * owner (UID, GID)
+    * size
+    * atime, ctime, mtime
+    * ACL's
+- Note that file name is present in the parent directory's inode structure
+- `ls -li <file>` to view inode number of a file
+- `df -i` to check inode usage on each filesystem
+
+## Difference between soft and hard link?
+
+- Hardlinks share the same inode number as the source.
+- Softlinks have a different inode number than the source.
+```
+$ touch a
+$ ln a b
+$ ls -i a b
+24 a 24 b
+$ ln -s a c
+$ ls -i a c
+24 a 25 c
+```
+- The data portion of the softlink inode is the name of the source file.
+- Hardlinks are only valid in the same filesystem.
+- Softlinks can be across filesystems.
+
+## When would you use a hardlink over a softlink?
+
+- Hardlinks are useful when source file is moved around because renaming the source does not remove the hardlink connection.
+- Softlinks are broken if the source is renamed.
+- This is because hardlinks share the same inode whereas soflink uses the source filename in it's data portion.
+- Softlinks are useful when you are working across filesystems.
+
+## Describe LVM and how it can be helpful
+
+- Logical volume managers (LVM) group disks into logical units.
+- The basic unit of an LVM is a physical extent (PE).
+- A disk may be divided into one or more PEs.
+- One or more PEs are contained in a volume group (VG).
+- One or more logical volumes (LV) are created out of a VG.
+- Example:
+    * Server with two 1TB disk drives.
+    * Create two PEs of 500GB on each disk.
+        + Disk one has PE1 and PE3.
+        + Disk two has PE2 and PE4.
+    * Create VG0 from PE1 and PE2.
+    * Create VG1 from PE3 and PE4.
+    * We can create a LV called `/root` and another one called swap on VG0.
+- Advantage of LVM is that we can create software RAID i.e., we can join multiple disks into one bigger disk.
+- We cannot specify a RAID level with LVM, but we can choose which PEs we want in a VG.
+- List operations:
+    * `pvs` to show PVs
+    * `vgs` to show VGs
+    * `lvs` to show LVs
+    * `lsblk` to show partition information (includes PV. VG and LV breakdown)
+- Create operations:
+    * `pvcreate /dev/sdc` to create a new PV called `/dev/sdc` to be managed by LVM
+    * `vgcreate vg01 /dev/sdc` to create a new VG called `vg01` using `/dev/sdc` PV
+    * `vgextend vg01 /dev/sdd` to extend the VG `vg01` to another `/dev/sdd` PV
+    * `lvcreate -n lv01 -l 100%VG vg01` to create a LV `lv01` that utilizes 100% of `vg01` VG
+
+## What is `md` and how do you use it?
+
+- MD is Linux software RAID where kernel has a RAID driver which takes one or more disks and does RAID across them.
+- It makes use of RAID possible without a hardware RAID controller.
+
+## What are some reasons to consider one filesystem over another e.g., XFS over EXT?
+
+- Ext2:
+    * Max file size = 2TB
+    * Max volume size = 4TB
+    * POSIX permissions and file compression
+    * Key weakness: takes a very long time to recover if shutdown abruptly
+    * Writes files to `LOST+FOUND`, however ext2 `fsck` utility will check the entire filesystem which takes a while
+- Ext3:
+    * Does everything Ext2 can
+    * Includes a journal which records all operations, therefore after an abrupt shutdown, `fsck` will just check files which were left incomplete
+    * Note that journal does take some overhead
+- Ext4:
+    * Max file size = 16TB
+    * Max volume size = 1 exabyte
+    * Max number of files = 4 billion
+    * Also uses a journal with checksum to ensure the journal is not corrurpted
+
+## What is RAID and define a few RAID levels
+
+- Redundant Array of Independent Disks (RAID) is a data storage virtualization technology combining multiple physical disks into logical units for data redundancy, performance improvement or both.
+- Data is distributed across the drives in one of several ways (referred to as RAID levels) depending on the required level of redundancy and performance.
+- RAID0 (striping)
+    * Data split into blocks written across all drives.
+    * Superior I/O performance.
+    * Not fault-tolerant i.e., if one drive fails, all data in the RAID0 array is lost.
+- RAID1 (mirroring)
+    * Data stored twice by writing to both the data and mirror drive.
+    * If a drive fails, controller uses either data or mirror drive for data recovery and continues operation.
+    * Excellent read speed.
+    * Write speed comparable to single drive.
+    * Half of the total drive capacity available for storage.
+    * Ideal for mission-critical data.
+
+## If a filesystem is full and you see a large file that is taking up a lot of space, how do you make space on that filesystem?
+
+- Delete the file if no process has the filehandle open.
+    * `lsof <filename>` to list processes that have the file open.
+- If a process has the filehandle open, it is better to not delete.
+    * Instead, `cp /dev/null <filename>` to reduce its size to zero.
+- A filesystem has a reserve, you can reduce this reserve to create more space using `tunefs`.
+    * `tune2fs -l /dev/partition | grep "Reserved"` shows the reserved blocks that are unusable
+    * `tune2fs -m2 /dev/partition` to lower the reserved block by 2%.
+
+## What is the difference between a character and a block device?
+
+- Block devices are buffered and read/written in fixed sizes e.g., hard disks, cd-roms.
+- Character devices read/write one character at a time and are not buffered e.g., from keyboard or a tty (terminal).
+
