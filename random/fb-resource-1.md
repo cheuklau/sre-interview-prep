@@ -445,3 +445,36 @@ flush privileges;
 - Symmetric cipher and session keys used at presentation layer.
 - Encrypt data across network using public key encryption first followed by a shared key.
 - Server certificate authentication done through a certificate authority.
+
+# Miscellaneous
+
+## How to update packages on Fedora and Ubuntu?
+
+- `sudo yum update -y` for Fedora
+- `sudo apt-get update -y` for Ubuntu
+
+## How to upgrade on Fedora and Ubuntu?
+
+- `sudo apt-get upgrade -y` for Ubuntu
+- Use `fedup` for Fedora
+
+## How to use SSH proxy to connect to a remote host?
+
+- SSH provides a way to secure traffic of any application using port forwarding, tunneling any TCP/IP port over SSH.
+- Client communicates with SSH server over encrypted channel and SSH server connects to application server.
+- How to configure the jump host:
+    1. Make sure you can SSH from client to jump host to destination.
+    2. On client add the following in `~/.ssh/config`
+    ```
+    Host <hostname of jumphost>
+        User <username on jumphost>
+        Hostname <ip of jumphost>
+    Host <hostname of destination>
+        User <username on destination>
+        Hostname <ip of destination>
+        Port 22
+        ProxyCommand ssh -q -W %h:%p <hostname of jumphost>
+    ```
+    3. On client run: `ssh <hostname of destination>`
+        * Will be prompted for user password on jump host then password for destination host.
+        * Use `ssh-copy-id SERVER_IP` to copy SSH key from originating server to jump server then jump server to destination.
