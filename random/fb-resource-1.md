@@ -374,7 +374,7 @@ $ ls -i a c
 
 # Databases
 
-## What are some things t ocheck on a slow database?
+## What are some things to check on a slow database?
 
 - Consider MySQL debugging.
 - Check OS too make sure the system is running fine e.g., CPU, memory, swap, and disk I/O.
@@ -412,3 +412,24 @@ update user set password=NEWPASSWORD where
 user='root';
 flush privileges;
 ```
+
+# Linux Systems
+
+## Define the boot process of a Linux system.
+
+- Power system on.
+- Basic input output system (BIOS) loads and performs power on self test (POST) to ensure components needed for a boot are okay.
+- After POST, BIOS looks for master boot record (MBR) and executes the boot loader.
+- For Linux system using Grand Unified Bootloader (GRUB), youo can select Linux or another OS to run.
+- Init ram disk kernel is loaded, which is a small kernel that understands filesystem.
+- Init ram disk will mount the filesystem and start Linux kernel from the filesystem.
+- Kernel will run `init` the very first process.
+- `init` will look for `/etc/inittab` and switch to the default run-level.
+- Run scripts in `/etc/rc.d/rc[0-6].d/` are executed based on the run level.
+
+## How to make changes to kernel parameters persist across boots?
+
+- `/etc/sysctl.conf` contains kernel parameters that can be modified
+- `sysctl` to make changes at runtime
+    * `sysctl -a` to show all set parameters
+    * `sysctl -w parameter=value` to set parameter to a new value
