@@ -371,3 +371,44 @@ $ ls -i a c
     * Cache-control specifying where to cache or not the contents of a page.
     * Control-length specifying size of the content.
     * Host which is the domain name of the server.
+
+# Databases
+
+## What are some things t ocheck on a slow database?
+
+- Consider MySQL debugging.
+- Check OS too make sure the system is running fine e.g., CPU, memory, swap, and disk I/O.
+    * `top` to give a list of running processes including CPU and memory
+        * `m` to sort by memory
+        * `p` to sort by cpu usage
+        * `top` also shows swap usage
+    * `free -m` to see memory and swap space usage
+    * `iostat` to show:
+        * number of I/O requests per second (`tps`)
+        * rate of read and write (`kB_read/s`, `kB_written/s`)
+        * amount of data read and written  (`kB_read`, `kB_wrtn`)
+- Log into MySQL and check the running queries
+    * `mysql; show full proocesslist;`
+    * Look for long-running queries
+    * Investigate queries with `mysql; explain <long-running query>`
+    * See if the long-running query is missing a primary key; if so, ask why
+- Look at slow query log file `/etc/mysql/my.cnf`
+    * Set `long_query_time` to 10 seconds so that any query running longer than 10 seconds is logged
+    * Also log queries not using indices by setting `log_queries_not_using_indices`
+- Ensure queries are being cached and that there is memory available for the cache:
+    * `mysql; SHOW VARIABLES LIKE 'have_query_cache'`to make sure query cache is turned on
+    * `mysql; SHOW STATUS LIKE 'Qcache%';` to view free memory for cache
+
+## How do you allow only SSL connections from remote users in MySQL?
+
+- `mysql; UPDATE mysql.user SET ssl_type='ANY' WHERE user="`
+
+## How do you change the MySQL root password?
+
+```
+mysql -u root -p
+use mysql;
+update user set password=NEWPASSWORD where
+user='root';
+flush privileges;
+```
