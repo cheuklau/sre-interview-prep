@@ -85,7 +85,7 @@ https://github.com/chassing/linux-sysadmin-interview-questions#fun
     5. SMTP server at `howstuffworks.com` connects with SMTP sercer at `mindspring.com` using port 25, and gives the message to mindspring server.
     6. Mindspring server recognizes domain name for `jsmith` is at `mindspring.com` s oit hads message to mindspring's post office protocol (POP3) server, which puts message in `jsmith` mailbox.
 
-# What is RAID? What is RAID0, RAID1?
+## What is RAID? What is RAID0, RAID1?
 
 - Redundant Array of Independent Disks (RAID) is a data storage virtualization technology combining multiple physical disks into logical units for data redundancy, performance improvement or both.
 - Data is distributed across the drives in one of several ways (referred to as RAID levels) depending on the required level of redundancy and performance.
@@ -155,3 +155,61 @@ https://github.com/chassing/linux-sysadmin-interview-questions#fun
 - Client application warns the user if host key changes.
 - Client encrypts using host public key, host decrypts using private key.
 - Host encrypts using client public key, client decrypts using private key.
+
+# Simple Linux Questions
+
+## What is name and UID of admin user?
+
+- `root` has UID of `0`
+
+## How to list all files including hidden ones in a directory?
+
+- `ls -al`
+- Note: `a` flag specifically lists all files including hidden ones
+- Note: `l` flag just shows more information
+
+## What is Linux command to remove a directory and its contents?
+
+- `rm -rf <directory name>`
+
+## Which command to show free/used memory? Does free memory exist on Linux?
+
+- `free -m`
+- Note: output is in MB.
+- Note: shows `total`, `used`, `free`, `buffers/cache`, `swap` and `available`.
+- Note: To see how much ram apps can use without swapping look at `available` instead of `free` because `free` also deducts the memory used for `buffers/cache` as explained below.
+- `cat /proc/meminfo`
+- `vmstat -s`
+- `top`
+- `htop`
+- Linux borrows memory for disk caching making free memory look lower than it actually is.
+- If an application wants more memory, it just takes back memory borrowed for disk cache.
+
+## How to search for string in files of a directory recursively?
+
+- `grep -r <string> <directory>`
+
+## How to connect to a remote server with SSH?
+
+- `ssh <username>@<server>`
+
+## How to get all env vars ad how can you use them?
+
+- `printenv` to print all env vars.
+- `$<ENV>` to use env vars in commands.
+
+## Command not found when running `ifconfig -a`. What can be wrong?
+
+- `ifconfig` binary not in `PATH`.
+- `which ifconfig` to check if system recognizes `ifconfig` command.
+- If not, `export PATH=$PATH:/path/to/ifconfig` to recognize `ifconfig` for this session.
+- If you need `ifconfig` between sessions, add `export PATH=$PATH:/path/to/ifconfig` to bash profile (`~/.bash_profile`).
+
+## What happens if I type `TAB-TAB`?
+
+- Tab completion of a partial command.
+
+## What command will show available disk space on Linux system?
+
+- `df -h`
+- Note: `h` flag just makes the output human readable.
