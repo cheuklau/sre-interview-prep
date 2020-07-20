@@ -213,3 +213,167 @@ https://github.com/chassing/linux-sysadmin-interview-questions#fun
 
 - `df -h`
 - Note: `h` flag just makes the output human readable.
+
+## Which Linux commands will alter a files ownership, files permissions?
+
+- `chown` to modify file ownership for user
+    * `chown <username> <filename>`
+- `chgrp` to modify file ownership for group
+    * `chgrp <username> <filename>`
+- `chmod` to modify file permissions
+    * `chmod +x <filename>` to give execute permission
+    * `chmod 777 <filename>` to give read, write, execute permission
+
+## What does `chmod +x <filename>` do?
+
+- Gives execute permission to file
+
+## What does the permission 0750 on a file mean?
+
+- Note: 1 = execute, 2 = write, 4 = read
+- Note: first bit is the sticky bit, if it is set to 1 then only the owner can delete the file.
+- Gives read, write, execute permission to owner.
+- Gives execute and read permission to group.
+- No permissions for others.
+
+## What does the permission 0750 on a directory mean?
+
+- Note: 1 = enter directory, 2 = write into directory, 4 = read contents of directory
+- Note: first bit is the sticky bit, if it is set 1 then only the owner can delete the directory.
+- Gives read, write and entrance permission to owner.
+- Gives read and entrance permission to group.
+- No permissions for others.
+
+## How to add a new system user without login permissions?
+
+- Users without login permissions are typically system users bound to a service and not actual users.
+- `useradd -r <system username> -s /bin/false`
+    * Note: `r` flag indicates to create a system account (no password and no home directory).
+    * Note: `s` flag indicates we want to set the shell (in this case to none).
+
+## How to add/remove a group from a user?
+
+- `usermod -a -G <groupname> <username>` to add user to an existing group (as secondary group).
+    * Note: `a` flag is for append so we don't overwrite existing groups the user is assigned to.
+- `usermod -g <groupname> <username>` to change user's primary group.
+- `useradd -G <groupname> <username>` to create a new user and assign it to existing group (as secondary group).
+- `id -nG <username>` to view groups that user belongs to.
+    * Note: `n` flag is used to print name of groups rather than IDs.
+    * Note: `G` flag means to print all Group IDs.
+- `usermod -G <list of groups to keep> <username>` to update the user's groups.
+
+## What is a bash alias?
+
+- Bash aliases are shortcuts to save you from having to remember long commands.
+- `alias <alias name>=<command to run>`
+
+## How do you set the mail address of the root/a user?
+
+- Update `/etc/aliases`:
+```
+root: <new root email address>
+<user>: <new user email address>
+```
+
+## What does CTRL-c do?
+
+- CTRL-c sends the `SIGINT` signal (2) to a process, which will be intercepted.
+- Usually process will clean up and exit.
+
+## What does CTRL-d do?
+
+- Sends EOF to the running process.
+- Has no impact if the program isn't readiung from the terminal; otherwise signals end of input.
+
+## What does CTRL-z do?
+
+- CTRL-Z sends the `SIGSTOP` signal (19) to a process, which cannot be intercepted by the program.
+- You can resume it in the foreground using `fg`.
+- You can resume it in the background using `bg`.
+
+## What is in `/etc/services`?
+
+- Contains infromation about services that client applications might use on the computer.
+- Contains service name, port number and protocol.
+- Supports `getportbyname()` sockets call e.g., `getportbyname(POP3)` returns 110 port that POP3 runs on.
+
+## How to redirect STDOUT and STDERR in bash?
+
+- Note: 0 = stdin, 1 = stdout, 2 = stderr
+- `some_command > stdout_file 2 > stderr_file` to redirect stdout and stderr to two separate files.
+- `some_command > stdout_file 2>&1` to redirect stdout to a file and redirect stderr to stdout.
+- `some_command &> both_file` to redirect both stdout and stderr to a file (not supported by `sh` or `ksh`).
+- Note: Last two commands are functionally the same.
+
+## What is the difference between UNIX and Linux.
+
+- UNIX is a full-fledged paid OS whereas Linux is just a kernel of many free OS e.g., Fedora, Ubuntu, etc.
+
+## What is the difference between Telnet and SSH?
+
+- SSH is more secure, encrypting data whereas telnet sends data in plain text.
+- SSH uses public key authentication wheres telnet does not authenticate.
+- SSH has more overhead than telnet.
+- Telnet has been all but replaced by SSH in almost all use cases.
+- Telnet and SSH servers the same purpose.
+- `telnet <server ip>` to connect (default port is 23 using TCP)
+
+## Explain the three load averages and what do they indicate. What command can be used to view the load averages?
+
+- Load averages are the three numbers shown with `uptime` and `top` e.g., `load average: 0.09, 0.05, 0.01`.
+- The three numbers represent load averages over 1, 5 and 15 minute averages.
+- Note: The 100% CPU utilization mark is 1.00 on a single core system, 2.00 on a dual-core, etc.
+- For the purposes of sizing CPU load, the total number of cores is what matters regardless of how many physical processors those cores are spread across.
+- `cat /proc/cpuinfo` to see how many cores system has.
+
+## Can you name a lower-case letter that is not a valid option for GNU `ls`?
+
+- e, j, y (obtained by looking at `man ls`).
+
+## What is a Linux kernel module?
+
+- Linux kernel module are pieces of code that can be loaded and unloaded into the kernel on demand.
+- Code extends functionality of the kernel without needing to reboot the system.
+- Module can be configured as built-in or loadable.
+- `lsmod` to show what kernel modules are loaded.
+- `modinfo <module name>` to show more information about a module.
+- `/etc/modules-load.d/<program name>.conf` list kernels to load during boot.
+- `modprobe <module name>` to load a module.
+- `modprobe -r <module name>` to unload a module.
+- Stored in `/lib/modules` and have extension `.ko`.
+- Common uses of kernel modules:
+    * Device drivers for specific pieces of hardware.
+    * Filesystem drivers that interpret contents of a filesystem e.g., files and directories.
+    * Invent your own system call or override an existing system call with a Linux kernel module of your own.
+        + Note: System calls are always built into the base kernel (no kernel module option).
+
+## Walk me through the steps in booting into single user mode to troubleshoot a problem.
+
+- You can change to single user mode dynamically by `telinit 1`.
+- For a system using Grand Unified Boot Loader (GRUB), you can reboot with `shutdown -r` then select the run level via the GRUB menu.
+- Single user mode is useful when you need to recover a filesystem or database, or to install and test some new hardware.
+- In these cases, we do not want other users on the system interfering.
+- Note:
+    * `shutdown` (unlike `telinit`) will send a message to all logged-in user and block any futher logins.
+    * It then tells `init` to switch runlevel.
+    * The `init` process sends all running processes a `SIGTERM` signal giving them a chance to save data.
+    * After 5 seconds a `SIGKILL` signal is sent to foricbly end processes.
+
+## Walk me through the steps you'd take to troubleshoot a 404 error on a web application you administer.
+
+- The HTTP 404 response indicates that the browser was able to communicate with a given server but the server could not find what was requested.
+- Debugging procedure:
+    1. Verify the issue. If server is running Nginx, look at `/var/log/nginx/access.log` and find the requested URI with the 404 return code.
+    2. Verify the URI is valid. If server is running Nginx, look at `/etc/nginx/nginx.conf` and see how the requested URI is being handled.
+    3. Verify that the requested resource is available. For example, if the URI is for a static file on the local server, verify it exists.
+    4. For more complex resource requests, increase log level from `warn` (default) to `info`.
+        * This allows missing resources causing 404 return codes to be in `/var/log/nginx/error.log`.
+
+## What is ICMP protocol? Why do you need to use?
+
+- Internet control message protocol (ICMP) is an internet layer protocol that network devices use to diagnose network communication issues.
+- Any IP network device has the capability to send, receive and process ICMP messages.
+- Primary use is for error reporting i.e., ICMP generates errors to share with sending device is any of its data did not get to the destination.
+- Second use is network diagnostics e.g., `traceroute` to find hops (and time between hops) to destination.
+- Note: `ping` is simplified `traceroute` to test speed of connection between two devices (useful for calculating latency).
+- Note: ICMP is not a transport protocol that sends data between systems (not TCP or UDP).
