@@ -381,61 +381,261 @@ root: <new root email address>
 # Medium Linux Questions
 
 ## What do the following commands do and how would you use them?
-1. `tee`
-2. `awk`
-3. `tr`
-4. `cut`
-5. `tac`
-6. `curl`
-7. `wget`
-8. `watch`
-9. `head`
-10. `tail`
-11. `less`
-12. `cat`
-13. `touch`
-14. `sar`
-15. `netstat`
-16. `tcpdump`
-17. `lsof`
+1. `tee` - reads stdin and writes it to both stdout and one or more files
+    * `wc -l file1.txt | tee -a file2.txt` prints the output of `wc` to stdout and appends to `file2.txt`.
+2. `awk` - scripting language used for manipulating data and generating reports.
+    * `awk '{print}' file.txt` prints each line of `file.txt`.
+    * `awk '/manager/ {print}' file.txt` prints each line with `manager` in `file.txt`.
+    * `awk '{print $1,$4}' file.txt` prints column 1 and 4 of each line in `file.txt`.
+3. `tr` - translates or deletes characters
+    * `cat file.txt | tr "[a-z]" "[A-Z]"` converts all lowercase letters in `file.txt` to uppercase.
+    * `echo "foobar" | tr -d "o"` deletes all `o` in `foobar`.
+4. `cut` - cut out sections from each line and writing result to stdout
+    * `cut -c 1-3 file.txt` prints first 3 characters of each row in `file.txt`.
+    * `cut -d " " -f 1 file.txt` prints the first field separated by `" "` delimiter.
+5. `tac` - concatenate and print files in reverse
+    * `tac file.txt` prints `file.txt` in reverse.
+6. `curl` - transfer data to or from a server using HTTP, FTP, IMAP, POP3, SCP, SFTP, SMTP, TFTP, TELNAT, LDAP or FILE
+    * `curl https://www.google.com` to curl Google front page.
+    * `curl -o hello.zip ftp://some.website/file.zip` to curl zip file into `hello.zip` location.
+7. `wget` - non-interactive (can run in the background) network downloader supporting HTTP, HTTPS, FTP.
+    * `wget https://www.google.com`
+    * `wget -c https://some-website.com/large-file.zip` to resume downloading a large file.
+8. `watch` - executes a program periodically (default is 2 seconds) showing output in fullscreen.
+    * `watch -d free -m` to highlight differnce between successive updates of `free -m` command.
+9. `head` - prints the top N number of data of given input.
+    * `head file.txt` prints the top 10 (default) lines of `file.txt`.
+    * `head -n 5 file.txt` prints the top 5 lines of `file.txt`.
+    * `head -c 5 file.txt` prints the top 5 characters of `file.txt`.
+10. `tail` - prints the last N number of data of given input.
+    * `tail file.txt` prints last 10 (default) lines of `file.txt`.
+    * `tail -n 3 file.txt` prints last 3 lines of `file.txt`.
+11. `less` - read contents of text file one page at a time.
+    * `less file.txt`
+12. `cat` - reads data from file, create, view and concatenate files.
+    * `cat file1.txt >> file2.txt` appends `file1.txt` to `file2.txt`.
+13. `touch` - create an empty file.
+    * `touch file.txt` to create an empty `file.txt`.
+14. `sar` - montor Linux resources e.g., CPU, memory use, I/O device consumption, network monitoring, disk usage, process/thread allocation, battery performance.
+    * `sar -u <interval> <number of reports>` shows CPU details number of reports times at specified interval
+    * `sar -r <interval> <number of reports>` shows memory used, amount of memory free, available cache and buffer.
+    * `sar -F <interval> <number of reports>` shows filesystems details.
+    * `sar -d <interval> <number of reports>` shows block device details.
+    * `sar -S <interval> <number of reports>` shows swapping details.
+15. `netstat` - displays network related information such as connections, routing tables, interface statistics, etc.
+    * `netstat -a` to show both listening and non-listening sockets.
+    * `netstat -at` to show all TCP ports.
+    * `netstat -au` to show all UDP ports.
+    * `netstat -l` to show only listening ports.
+    * `netstat -lt` to show listening TCP ports.
+    * `netstat -s` to show statistics for all ports.
+    * `netstat -pt` to show PID and program names.
+    * `netstat -r` to show kernel routing information e.g., default gateway.
+    * `netstat -ap | grep <program>` to show port on which program is running.
+    * `netstat -an | grep ':<port>'` to show which process is using a given port.
+    * `netstat -i` to show list of network interfaces
+16. `tcpdump` - packet sniffing and packet analyzing tool to troubleshoot connectivity issues.
+    * Used to capture, filter and analyze network traffic such as TCP/IP packets going through your system.
+    * Saves captured information in a PCAP file which can b eopened through applications such as Wireshark.
+    * `sudo tcpdump` to capture packets of current network interface connected to internet.
+    * `sudo tcpdump -i <network interface>` to capture packets at a specific network interface.
+    * `sudo tcpdump -w output.pcap -i <network interface>` to save captured packets to PCAP file.
+    * `sudo tcpdump -r output.pcap` to read captured packets from file.
+    * `sudo tcpdump -i <network interface> tcp` to capture only TCP packets.
+    * Sample `tcpdump` output line:
+    ```
+    08:41:13.729687 IP 192.168.64.28.22 > 192.168.64.1.41916: Flags [P.], seq 196:568, ack 1, win 309, options [nop,nop,TS val 117964079 ecr 816509256], length 372
+    ```
+    * Timestamp, IPv4, source IP + port, destination IP + port, TCP flags (P=data push), sequence number (packet contains bytes 196 to 568), ack number (1 since this is the side sending the data), window size (309 bytes avaiable in the receiving buffer), TCP options, packet length (372 bytes) of the payload data.
+17. `lsof` - provides a list of files that are opened and by which process.
+    * `lsof` to list all opened files in the system.
+    * `lsof -u <username>` to list all opened files by a user.
+    * `lsof -c <process name>` to list all opened files by a process by name.
+    * `lsof -p <pid>` to list all opened files by a process by PID.
+    * `lsof -R` to list parent PIDs.
+    * `lsof -i` to list all files opened by network connections.
 
 ## What does an `&` after a command do?
 
+- `<command> &` runs the process in the background.
+- Inherits stdout/stderr from shell so it still writes to terminal.
+- Can bring to foreground with `fg`.
+- Can be accessed using `%<pid>`.
+- If shell receives SIGHUP, it also sends a SIGHUP to the process.
+
 ## What does `& disown` after a command do?
+
+- `disown` removes the job from the shell's job list.
+- Job will no longer received SIGHUP.
+- However still connected to the terminal so if terminal is destroyed, the program will fail as soon as it tries to access stdin/stdout.
+- Note: `nohup <command>` separates process from terminal.
+    * Closes stdin, redirects stdout and stderr to `nohup.out`.
+    * Prevents process from receiving a SIGHUP.
 
 ## What is a packet filter and how does it work?
 
+- Packet filter is a piece of software that looks at the header of packets as they pass through and decides their fate i.e., DROP (discard as if it never received it), ACCEPT (let it pass through) or something more complicated.
+- Increases control (e.g., prevent packets from going to certain outside regions), security (e.g., stop ping of death from entering), and watchfulness (e.g., look for abnormalities).
+- `iptables` inserts and deletes rules from kernel's packet filtering table.
+- `iptables -L --line-number` shows all rules with line number.
+- `iptables -t <table name> --append INPUT -j DROP` appends a rule that drops all incoming traffic on any port.
+- `iptables -t <table name> --delete INPUT 2` deletes rule 2 from INPUT chain.
+- `iptables -t <table name> -A INPUT -p udp -j DROP` appends a rule to drop all UDP packets.
+- `iptables -t <table name> -A INPUT -s 192.168.1.230 -j ACCEPT` to append a rule in the INPUT chain to accept all packets from 192.168.1.230.
+- `iptables -t <table name> -A OUTPUT -d 192.168.1.123 -j DROP` to append a rule in the OUTPUT chain to drop all packets for 192.168.1.123.
+- `iptables -t <table name> -A INPUT -i wlan0 -j DROP` to append a rule in INPUT chain to drop all packets destined for wireless interface.
+- `iptables -t <table name> -A FORWARD -j DROP` to drop all packets in the FORWARD chain.
+- `sudo iptables-save` to save iptables config.
+
 ## What is Virtual Memory?
+
+- Memory management technique.
+- Kernel maps program memory addresses i.e., virtual addresses into physical addresses in computer memory.
+- Main storage seen by process appears as a contiguous address space.
+- Memory management unit (MMU) built into CPU automatically translates virtual addresses to physical addresses.
+- Benefits:
+    * Frees applications from having to manage a shared memory space.
+    * Increased security due to memory isolation.
+    * Conceptually use more memory than physically available using technique called paging.
+- Virtual address space divided into pages i.e., contiguous virtual memory addresses.
+- Page tables translate virtual addresses seen by application into physical addresses used by the hardware to process instructions.
+- Page tables indicate if a page is in real memory.
+- Thrashing occurs when computer spends a large amount of time transferring pages to and from a backing store, slowing down useful work.
+- Occurs when there is not enough memory to store working set (min number of pages) for all active programs.
+- Need to add more memory or close more programs.
 
 ## What is swap and what is it used for?
 
+- Swap space is portion of virtual memory that is on hard disk.
+- Swap space is used when RAM is full.
+
 ## What is an A record, an NS record, a PTR record, a CNAME record, an MX record?
+
+- A: Host address
+    * Translates domain name into IP address.
+- NS: Name server
+    * Identify DNS servers responsible (authoritative) for a zone.
+- PTR: Pointer
+    * Reverse records that map IP addresses to domain names.
+    * Looking up dmain name for `12.23.34.45` is done with a PTR query for `45.34.23.12`.
+- CNAME: Domain name aliases
+    * Used to give a server multiple names (aliases)
+    * Ex: `www.domain.com` and `domain.com` (A-record for `domain.com` and CNAME record for `www.domain.com` pointing to short name)
+- MX: Mail exchange
+    * Specify email servers responsible for a domain name
+    * When sending email to `user@example.com`, email server looks up MX record for `example.com`
 
 ## Are there any other resource records and what are they used for?
 
+- TXT: Descriptive text
+    * Used too hold descriptive text e.g., who hosts it.
+    * Also used for DNS verification for TLS/SSL certificates.
+
 ## What is a Split-Horizon DNS?
+
+- Facility of a DNS implementation to provide different sets of DNS information usually selected by the source address of the DNS request.
+- Use case: DNS server configured to return internal address if request from internal server; return external address if request from external server.
 
 ## What is the sticky bit?
 
+- Sticky bit is a permission bit that is set on a file or directory that only lets the owner or root user delete or rename it.
+
 ## What does the immutable bit do to a file?
+
+- `sudo chattr +i <filename>` sets the immutable bit of the file to prevent anyone including root user from deleting it.
+- `sudo chattr -i <filename>` to remove the immutable bit.
 
 ## What is the difference between hardlinks and symlinks? What happens when you remove the source to a symlink/hardlink?
 
+- Hardlinks share the same inode number as the source.
+- Softlinks have a different inode number than the source.
+```
+$ touch a
+$ ln a b
+$ ls -i a b
+24 a 24 b
+$ ln -s a c
+$ ls -i a c
+24 a 25 c
+```
+- The data portion of the softlink inode is the name of the source file.
+- Hardlinks are only valid in the same filesystem.
+- Softlinks can be across filesystems.
+- If the source is removed, hardlink would still exist and softlink would be invalid.
+
 ## What is an inode and what fields are stored in an inode?
+
+- Data structure in Unix that contains metadata about a file.
+- Data includes:
+    * mode
+    * owner (UID, GID)
+    * size
+    * atime, ctime, mtime
+    * ACL's
+- Note that file name is present in the parent directory's inode structure
+- `ls -li <file>` to view inode number of a file
+- `df -i` to check inode usage on each filesystem
 
 ## How to force/trigger a file system check on next reboot?
 
+- Easiest way to force `fsck` filesystem check is to create an empty file called `forcefsck` in the partition's root directory.
+- How a filesystem may break:
+    * When a program writes to file, data is first copied into an in-core buffer in the kernel.
+    * User process is allowed to proceed even if the data write may not happen long until after the write system call occurs.
+    * Filesystem can become inconsistent if system is halted (unclean shutdown).
+    * Blocks can become damaged on a disk drive.
+- What `fsck` checks for:
+    * File system size, number of inodes, free-block, free-inode count.
+    * Inodes checked for inconsistencies:
+        + Format and type e.g., regular, directory, block, character, FIFO, symbolic, shadow, socket.
+        + State e.g., allocated, unallocated, partially allocated.
+        + Duplicate block checks i.e., each inode contains pointers to blocks that should not overlap.
+
 ## What is SNMP and what is it used for?
+
+- Simple network management protocol (SNMP) is an application protocol that collects and organizes information about managed devices on IP networks.
+- SNMP talks to network to find network device activity e.g., bytes, packets, and errors transmitted and received on a router, connection speed betwen devices and number of hits a web server receives.
+- Useful for network monitoring.
 
 ## What is a runlevel and how to get the current runlevel?
 
+- Run level is a state of `init` that defines what system services are ooperating.
+- To check current runlevel `runlevel` or `wh o-r`.
+
 ## What is SSH port forwarding?
+
+- Tunneling application ports from client to server and vice versa.
 
 ## What is the difference between local and remote port forwarding?
 
+- Local port forwarding:
+    * Forward a port from client to server.
+    * SSH client listens for connections on configured port, when it receives a connection, it tunnels it to an SSH server.
+    * Server connects to configured destination port possibly on a different machine than SSH server.
+    * Typical uses include jump servers, connecting to internal network service.
+    * General: `ssh -L port:host:hostport user@server`
+    * Example: `ssh -L 80:internal.server.com:80 jump.server.com`
+        + Opens a connection to jump server and forwards any connections to port 80 on local machine to port 80 on the internal server.
+- Remote port forwarding:
+    * General: `ssh -R port:host:hostport user@server`
+    * Example: `ssh -R 8080:localhost:80 public.example.com`
+        + Allows anyone on the remote server to connect to TCP port 8080 on remote server.
+        + Connection will then be tunneled back too the client host.
+        + Client host then makes a TCP connection to port 80 on local host.
+    * Useful for giving someone on the outside access to internal web server.
+
 ## What are the steps to add a user to a system without using useradd/adduser?
 
-## What is MAJOR and MINOR numbers of special files?
+1. Add an entry foor user in `/etc/passwd`.
+2. Add an entry for the group in `/etc/group`.
+3. Create home directory for user.
+4. Set new user password with `passwd`.
+
+## What is major and minor numbers of special files?
+
+- Major number identifies genearl class of device.
+    * Kernel uses it to look up appropriate driver.
+- Minor number idetifies a particular device within a general class.
 
 ## Describe the mknod command and when you'd use it.
 
