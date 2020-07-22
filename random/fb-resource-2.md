@@ -888,3 +888,98 @@ bar
     * Data could be stored local or remoote.
     * Flexible metadata.
     * Easy to scale out.
+
+# Hard Linux Questions
+
+## What is a tunnel and how you can bypass a http proxy?
+
+- Tunneling traffic is sending data e.g., HTTP over a different protocol e.g., SSH.
+- Use destination server as a proxy server.
+- Setting up a tunnel:
+    * `ssh -D 8080 user@server-to-route-to.com`
+        + `D` sets up a SOCKS proxy on your local machine at port 8080.
+        + Tunnel all traffic across SSH pipe.
+        + As long as `ssh -D` is running, youo can set `localhost:8080` as a proxy in any application that supports it e.g., web browser, and have all traffic routed through `server-to-route-to.com`.
+        + Note: In Chrome you can add `127.0.0.1:8080` into SOCKS row for proxy.
+
+## What is the difference between IDS and IPS?
+
+- IDS (intrusion detection system) monitors network and flag suspicious activity.
+- IPS (intrusion prevention system) live in same area of network as firefall between outside woorld and internal network and proactively deny netwoork traffic based on a security profile if the packet presents a known security threat.
+
+## What shortcuts do you use on a regular basis?
+
+- Tab for autocomplete.
+- Ctrl+c to stop program.
+- Ctrl+z to send current process to background.
+
+## What is the Linux Standard Base?
+
+- Joint project by several Linux distributions under Linux Foundation to standardize software system structure including the filesystem hierarchy used in the kernel.
+- LSB is based on POSIX (portable operating system interface) specificatioon.
+
+## What is an atomic operation?
+
+- Operation during which processor can simultaneously read a location and write it in the same bus operation.
+- Prevents ay other processor or I/O from writing or reading memory until operation is complete.
+- Linux uses a variety of atomic operatioons to provide safe and efficient behavioor in a multi-threaded environment.
+
+## Your freshly configured http server is not running after a restart, what can you do?
+
+- Troubleshoot:
+    1. SSH onto server.
+    2. `ps aux | grep http` to see if proocess is running.
+    3. `journalctl -u http` to see if it had problems starting up.
+    4. `vi /var/log/nginx/error.log` for more error logs.
+    5. `vi /var/log/nginx/access.log` to see if any successful requests before going down.
+    6. Address errors found e.g., full disk, incorrect config, missing resources, etc.
+    7. `systemctl restart http`
+- Note: Above only considered server side errors, and also did not consider monitoring tools.
+
+## What kind of keys are in ~/.ssh/authorized_keys and what it is this file used for?
+
+- Specifies the SSH keys that can be used for logging into the user account foor which the file is configured.
+- Configures permanent access using SSH keys.
+
+## I've added my public ssh key into authorized_keys but I'm still getting a password prompt, what can be wrong?
+
+- `~/.ssh/authorized_keys` must be writable only by you i.e., `700`, `755` or `775`
+- `~/.ssh/authorized_keys` must be readable i.e., at least `400`
+- Private key on local machine must be readable and writable only by you i.e., `600`
+
+## What does :(){ :|:& };: do on your system?
+
+- This is a fork bomb.
+- It defines a function called `:` which calls itself and pipes to itself in the background.
+- Need to reboot the system.
+
+## How do you catch a Linux signal on a script?
+
+- `trap` allows you to execute a command when a signal is received by your script.
+- `trap arg signals`
+    * `signals` is a list of signals to intercept.
+    * `arg` is a command to execute.
+- Example: `trap "echo 'hello'; exit" SIGHUP SIGINT SIGTERM`
+- Note: `SIGKILL` cannot be trapped.
+
+## Can you catch a SIGKILL?
+
+- No, kernel immediately terminates any process sent this signal without signal handling.
+
+## What's happening when the Linux kernel is starting the OOM killer and how does it choose which process to kill first?
+
+## Describe the linux boot process with as much detail as possible, starting from when the system is powered on and ending when you get a prompt.
+
+## What's a chroot jail?
+
+## When trying to umount a directory it says it's busy, how to find out which PID holds the directory?
+
+## What's LD_PRELOAD and when it's used?
+
+## You ran a binary and nothing happened. How would you debug this?
+
+## What are cgroups? Can you specify a scenario where you could use them?
+
+## How can you remove/delete a file with file-name consisting of only non-printable/non-type-able characters?
+
+## How can you increase or decrease the priority of a process in Linux?
