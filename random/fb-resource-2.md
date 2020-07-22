@@ -639,60 +639,252 @@ $ ls -i a c
 
 ## Describe the mknod command and when you'd use it.
 
+- `mknod()` system call creates a filesystem node.
+- `mode` specifies permissions and type of node (file, device special file or named pipe).
+- If character or block device file then `dev` specifies major and minor numbers.
+
 ## Describe a scenario when you get a "filesystem is full" error, but 'df' shows there is free space.
+
+- Process has opened a large file which has been deleted.
+    * Need to kill process to free up the space.
+    * `sudo lsof +L1` to view files that have been deleted but still open.
+- Max number of inodes reached.
+    * `df -i` to check.
 
 ## Describe a scenario when deleting a file, but 'df' not showing the space being freed.
 
+- Process has opened a large file which has been deleted.
+    * Need to kill process to free up the space.
+    * `sudo lsof +L1` to view files that have been deleted but still open.
+
 ## Describe how 'ps' works.
+
+- `ps` reads the proc filesystem.
+- `/proc/<pid>` contains varioous files that provide info about PID.
+- `strace -e open ps` shows which files are opened by `ps`.
 
 ## What happens to a child process that dies and has no parent process to wait for it and what’s bad about this?
 
+- A zombie process has completed but it is still in the process table waiting for its parent to read its exit status.
+- Parent processes normally issue the `wait` system call to read the child's exit status upon which the zombie is removed (reaped).
+- `kill` does not work on zombie processes.
+- When a child dies, the parent receives a `SIGCHLD` signal.
+- These zombie processes can fill up the process table preventing new processes from starting.
+
 ## Explain briefly each one of the process states.
+
+- Runnable: process can be executed
+    + Just waiting for CPU time to process its data
+    + As soon as it makes a system call that cannot be immediately completed, kernel puts it to sleep
+- Sleeping: process waiting for resource
+    + Waiting for a specific event to occur
+    + Will not get CPU time unless it receives a signal or response to one of its I/O requests
+- Zombie: process trying to die
+    + Finished executing but have not had their status collected
+    + Check their PPIDs with `ps` to see where they're coming from
+- Stopped: process suspended
+    + Administratively forbidden to run
+    + Restarted with CONT
 
 ## How to know which process listens on a specific port?
 
+- `netstat -ltnp | grep -w ':80'`
+    * `l` to show listening sockets
+    * `t` for tcp
+    * `n` for nuumerical addresses
+    * `p` to show process ID
+    * `grep` for `:80`
+- `lsof -i :80`
+
 ## What is a zombie process and what could be the cause of it?
+
+- A zombie process has completed but it is still in the process table waiting for its parent to read its exit status.
+- Parent processes normally issue the `wait` system call to read the child's exit status upon which the zombie is removed (reaped).
+- `kill` does not work on zombie processes.
+- When a child dies, the parent receives a `SIGCHLD` signal.
 
 ## You run a bash script and you want to see its output on your terminal and save it to a file at the same time. How could you do it?
 
+- `./script.sh | tee out.txt`
+- `tee` takes in stdin and writes to terminal and file.
+
 ## Explain what echo "1" > /proc/sys/net/ipv4/ip_forward does.
+
+- Replaces the file content in `/proc/sys/net/ipv4/ip_forward` with `1`.
 
 ## Describe briefly the steps you need to take in order to create and install a valid certificate for the site https://foo.example.com.
 
+- Create a certificate signed by a certificate authority e.g., using Let's Encrypt.
+- Verify you own the domain e.g., via a DNS challenge where you create a TXT record with a random string.
+- CA will verify the TXT record.
+- Upload certificate to webserver or load-balancer, whichever is handling the TLS/SSL termination.
+
 ## Can you have several HTTPS virtual hosts sharing the same IP?
+
+- Virtual host refers to practice oof running more than one website on a single server.
+- Virtual hosts can be IP-based i.e., different IP address for every web site or name-based i.e., muultiple names running on each IP address.
+- For name-based virtual hosting, server relies on client to report hostname as part of HTTP header.
+- This allows many different hosts to share the same IP address.
 
 ## What is a wildcard certificate?
 
+- A wildcard certificate is a digital certificate applied to a domain and all its subdomains.
+- Example: `*.example.com`
+
 ## Which Linux file types do you know?
+
+1. Regular
+    * Create with `touch` or `vi`.
+    * List with `ls -l | grep ^-`.
+2. Directory
+    * Create with `mkdir`.
+    * List with `ls -l | grep ^d`.
+3. Block
+    * Hardware files mostly in `/dev`.
+    * Create with `fdisk`.
+    * List with `ls -l | grep ^b`.
+4. Character
+    * Serial stream of input/output e.g., terminals.
+    * List with `ls -l | grep ^c`.
+5. Pipe files
+    * Named pipe FIFO.
+    * Create with `mkfifo`.
+    * List with `ls -l | grep ^p`.
+6. Symbolic link files
+    * Linked (soft/hard) files to other files.
+    * Create with `ln`.
+    * List with `ls -l | grep ^l`.
+7. Socket files
+    * Pass information between applications.
+    * Create with `socket()` system call.
+    * List with `ls -l | grep ^s`.
 
 ## What is the difference between a process and a thread? And parent and child processes after a fork system call?
 
+- A process:
+    * Created by the operating system
+    * Requires overhead
+    * Contains information about program resources and execution state
+        + PID, UID, GID
+        + Environment
+        + Working directory
+        + Program instructions
+        + Registers, stack, heap
+        + File descriptors
+        + Signal actions
+        + Shared libraries
+        + Interprocess communication tools
+- A thread:
+    * Exists within a process and uses the process resources.
+    * Has its own flow of control as long as its parent process exists.
+    * May share process resources with threads that act equally independently.
+    * Dies if the parent process dies.
+    * Is lightweight because overhead has already been accomplished by creation of its process.
+- Since threads within the same process share resources:
+    * Changes made by one thread to a shared system resource will be seen by others.
+    * Two pointers with same value point to the same data.
+    * Reading and writing to same memory location is possible.
+- Child is a clone of the parent after a `fork()` system call.
+
 ## What is the difference between exec and fork?
+
+- Consider example of running `ls` in a terminal:
+    * If `fork()` succeeds, the child shell process will run `exec /bin/ls` which will replace the copy of the child shell with itself.
+    * Any parameters passed to `ls` are handled by `exec`.
+    * Note that `exec()` is also a system call.
 
 ## What is "nohup" used for?
 
+- `nohup <command>` separates process from terminal.
+    * Closes stdin, redirects stdout and stderr to `nohup.out`.
+    * Prevents process from receiving a SIGHUP.
+
 ## What is the difference between these two commands: `myvar=hello` and `export myvar=hello`?
+
+- `export` makes the variables to sub-proocesses.
 
 ## How many NTP servers would you configure in your local ntp.conf?
 
+- Network time protocol (NTP) synchronizes the time of a client server to another server within a few milliseconds of UTC.
+- NTP configured using `/etc/ntp.conf`.
+- Most basic NTP config uses 2 servers.
+- At least two should be configured for primary and backup.
+
 ## What does the column 'reach' mean in ntpq -p output?
+
+- `ntpq` used to query NTP servers.
+- `p` flag prints a list of peers known to the server and their states
+- The value in `reach` is octal and it represents the reachability register. For example, `257` value in octal is `10101111` meaning there were valid responses were not received out of 8.
 
 ## You need to upgrade kernel at 100-1000 servers, how you would do this?
 
+- Configuration management e.g., Chef, Ansible, etc. to upgrade all controlled machines from a single server.
+- For example, with Ansible, you supply a list of hosts and a playbook for upgrading and execute the playbook on all remote machines.
+- Note: Ansible communicates with remote servers over SSH.
+
 ## How can you get Host, Channel, ID, LUN of SCSI disk?
+
+- `cat /proc/scsi/scsi`
 
 ## How can you limit process memory usage?
 
+- `ulimit` limits resources that a process can use.
+- `ulimit -v` to limit amount of memory processes in a shell can use.
+- `ulimit -s` to increase the allowed stack size.
+
 ## What is bash quick substitution/caret replace(^x^y)?
+
+- Reruns previous command with substitution.
+- Example:
+```
+$ echo foo
+foo
+
+$ ^foo^bar
+bar
+```
 
 ## Do you know of any alternative shells? If so, have you used any?
 
+- Bash, ksh, zsh
+
 ## What is a tarpipe (or, how would you go about copying everything, including hardlinks and special files, from one server to another)?
+
+- `netcat` is used to read from and write to network coonnections using TCP and UDP.
+- On receiving end: `netcat -l -p 7000 | tar x`
+- On sending end: `tar -cf - * | netcat otherhost 7000`
 
 ## How can you tell if the httpd package was already installed?
 
+- `which httpd`
+- `whereis httpd`
+- `locate --basename '\nano'`
+
 ## How can you list the contents of a package?
+
+- With dkpg: `dkpg -L <package>`
+- With apt: `apt-file list <package>`
+- With yum: `repoquery --list <package>`
 
 ## How can you determine which package is better: openssh-server-5.3p1-118.1.el6_8.x86_64 or openssh-server-6.6p1-1.el6.x86_64 ?
 
+- Name: `openssh-server-5.3`
+- Version: `5.3p1`
+- Release: `118.1`
+- Linux: `el6` (Enterprise Linux 6)
+- Architecture: `x86_64`
+- Therefore we want too use the latter since it is a newer version of the package.
+
 ## Can you explain to me the difference between block based, and object based storage?
+
+- Block storage stores data in fixed-sized chunks.
+    * No additional details associated with a block outside of address.
+    * Controlling OS determines storage management.
+    * OS determines where data goes in the block.
+    * Use cases: databases, RAID.
+- Object storage stores data in isolated containers called objects.
+    * Give a single unique ID and stoore in a flat memory model.
+    * Retrieve object by simply presenting ID.
+    * Data could be stored local or remoote.
+    * Flexible metadata.
+    * Easy to scale out.
