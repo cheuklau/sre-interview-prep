@@ -968,18 +968,74 @@ bar
 
 ## What's happening when the Linux kernel is starting the OOM killer and how does it choose which process to kill first?
 
+- Out of memory (OOM) killer is a process Linux kernel employs when system is critically low on memoory.
+- OOM killer reviews all running processes and assigns them a badness score based on:
+    * Process and all of its child processes using a lot of memory.
+    * Minimum number of processes are killed in order too gree up enough memory.
+    * Root, kernel and system proocesses given much lower scores.
+- Process with the highest score is killed.
+- `dmseg | egrep -i "killed process"` to see if OOM was invoked.
+- `grep -i "out oof memory" /var/log/kern.log` to see if OOM was invoked.
+
 ## Describe the linux boot process with as much detail as possible, starting from when the system is powered on and ending when you get a prompt.
+
+- Power system on.
+- Basic input output system (BIOS) loads and performs power on self test (POST) to ensure components needed for a boot are okay.
+- After POST, BIOS looks for master boot record (MBR) and executes the boot loader.
+- For Linux system using Grand Unified Bootloader (GRUB), you can select Linux or another OS to run.
+- Init ram disk kernel is loaded, which is a small kernel that understands filesystem.
+- Init ram disk will mount the filesystem and start Linux kernel from the filesystem.
+- Kernel will run `init` the very first process.
+- `init` will look for `/etc/inittab` and switch to the default run-level.
+- Run scripts in `/etc/rc.d/rc[0-6].d/` are executed based on the run level.
 
 ## What's a chroot jail?
 
+- `chroot` changes apparent root directory for a running process and its children.
+- Allows you to run a program (process) with a root directory other than `/`.
+- Program cannot see or access files outside the designated directory tree.
+- `chroot new_root <command>`
+
 ## When trying to umount a directory it says it's busy, how to find out which PID holds the directory?
+
+- `lsof | grep "/path/to/directory" | cut -d " " -f 2`
+- `lsof` prints PID and path to file so we just grep for the directory and cut the PID column (2).
 
 ## What's LD_PRELOAD and when it's used?
 
+- Setting `LD_PRELOAD` to path of a shared library will load it before any other library.
+- To run `ls` with your own special `malloc()` implementation:
+    * `LD_PRELOAD=/path/to/my/malloc.so /bin/ls`
+
 ## You ran a binary and nothing happened. How would you debug this?
+
+- First see if the process is running `ps | grep <program name>`.
+- Note the process state.
+- If it is running check `/var/log/path/to/program/log` for further application-level debugging.
+- `top` to make sure CPU and memory are at acceptable levels.
+- `df -h` to make sure hard disks are not full.
+- `iostat` to make sure I/O for read and write are acceptable levels.
 
 ## What are cgroups? Can you specify a scenario where you could use them?
 
+- Cgroups are a Linux kernel feature which allow proocesses to be organized into hierarchical groups whose usage of varioous types of resources can then be limited and monitored.
+- Kernel's cgroup interface is provided through pseudo-filesystem called cgroupfs.
+- Grouping is implemented in the core cgroup kernel code.
+- Resource tracking and limits are implemented in a set of per-resource-type subsystems (e.g.memory, CPU, etc).
+- Cgroups are used to run "containers" in isolated environments.
+
 ## How can you remove/delete a file with file-name consisting of only non-printable/non-type-able characters?
 
+- Specify the path i.e., `rm ./file`
+
 ## How can you increase or decrease the priority of a process in Linux?
+
+- Niceness of a process is a numeric hint to kernel about how process should be prioritized for CPU time
+- High nice means low priority
+- Low nice means high priority
+- Range from `-20` to `19`
+- Child process by default inherits niceness of parent
+- Nice has no effect on kernel's management of its memory or I/O
+- `nice -n 5 ~/bin/longtask` lowers priority (raises nice) by 5
+- `sudo renice -5 8829` sets nice value of pid 8829 to 5
+- `sudo renice 5 -u boggs` sets nice value of bogg's processes to 5
