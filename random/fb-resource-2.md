@@ -1039,3 +1039,61 @@ bar
 - `nice -n 5 ~/bin/longtask` lowers priority (raises nice) by 5
 - `sudo renice -5 8829` sets nice value of pid 8829 to 5
 - `sudo renice 5 -u boggs` sets nice value of bogg's processes to 5
+
+# Expert Linux Questions
+
+## A running process gets EAGAIN: Resource temporarily unavailable on reading a socket. How can you close this bad socket/file descriptor without killing the process?
+
+- Get PID of process: `ps -e | grep <process name>`
+- List file descriptors for process: `ls -al /proc/<PID>/fd`
+- Use `gdb` to attach to process and then close the file descriptor:
+```
+$ gdb
+...
+(gdb) attach <pid>
+...
+(gdb) p close(<fd>)
+...
+(gdb) detach
+...
+(gdb) quit
+```
+
+## What do you control with swapiness?
+
+- Swapiness controlls how aggressive the kernel will swap memory pages.
+- Higher values will increase aggressiveness.
+- Value of `0` instructs kernel not to initiate swap until the amount of free pages is less than the high water mark in a zone.
+- Default value is `60`.
+- Note: Linux divides RAM into zones. For 64-bit Linux:
+    * Direct memory access (DMA): low 16MB of memory
+    * Direct memory access 32 (DMA32): low 4GB of memory
+    * Normal: all RAM aboove 4GB
+- Note: RAM is allocated in pages of fixed size (typical 4kB).
+
+## How do you change TCP stack buffers? How do you calculate it?
+
+- TCP memory calculated based on system memory.
+- `cat /proc/sys/net/ipv4/tcp_mem` to find values.
+- `cat /proc/sys/net/core/rmem_{default,max}` to find default and max receive socket memory.
+- `cat /proc/sys/net/core/wmem_{default,max}` to find default and max write socket memory.
+- To change TCP buffer size, change `/etc/sysctl.conf`:
+```
+echo 'net.core.wmem_max=12582912' >> /etc/sysctl.conf
+echo 'net.core.rmem_max=12582912' >> /etc/sysctl.conf
+echo 'net.ipv4.tcp_rmem= 10240 87380 12582912' >> /etc/sysctl.conf
+echo 'net.ipv4.tcp_wmem= 10240 87380 12582912' >> /etc/sysctl.conf
+```
+- `sysctl -p` to reload the changes
+- `tcpdump -ni eth0` to oview the changes
+
+## What is Huge Tables? Why isn't it enabled by default? Why and when use it?
+
+- Helpful in virtual memory management.
+- Standard page size is 4kb, you can define huge pages as large as 1GB.
+- Increases applicatioon performance of applications with large memory requirements.
+- Using huge pages decreases the number of mapping tables to load by the kernel increasing kernel-level performance.
+
+## What is LUKS? How to use it?
+
+- Linux unified key setup (LUKS) is a disk encryption specification.
