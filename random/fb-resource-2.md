@@ -1102,40 +1102,125 @@ echo 'net.ipv4.tcp_wmem= 10240 87380 12582912' >> /etc/sysctl.conf
 
 ## What is localhost and why would ping localhost fail?
 
-## What is the similarity between "ping" & "traceroute" ? How is traceroute able to find the hops.
+- `localhost` is default name describing the local computer address i.e., loopback address.
+- `ping localhost` will fail if loopback interface `lo0` is not configured.
+    * Check `ifconfig` to check if `lo0` is configured.
+
+## What is the similarity between ping and traceroute? How is traceroute able to find the hops.
+
+- Main difference between ping and tracerouote is that ping is a quick and easy utility to tell if a server is reachable and how long it took to send and receive data.
+- Traceroute finds the exact route taken to reach the server and time taken by each hop.
+- Traceroute works by sending packets with low TTL which specifies hoow many hops can packet survive before it is returned.
+- When packet can't reach final destination and expires at an intermediate step, that node returns the packet and identifies itself.
+- By increasing TTL gradually, traceroute can identify intermediate hosts.
+- If hop comes back with request timed out it indicates network congestion and a reason for slow web pages and dropped connections.
 
 ## What is the command used to show all open ports and/or socket connections on a machine?
 
+- `lsof -i` to show all UDP/TCP sockets.
+    * `lsof -i :443` to list processes listening on port 443
+- `netstat -a` to show all sockets.
+    * `-l` to show only listening sockets.
+    * `-p` to show PID of program belonging to sockets.
+
 ## Is 300.168.0.123 a valid IPv4 address?
+
+- No the first octet is `>255`.
 
 ## Which IP ranges/subnets are "private" or "non-routable" (RFC 1918)?
 
+- 10.0.0.0/8 IP addresses: 10.0.0.0 – 10.255.255.255
+- 172.16.0.0/12 IP addresses: 172.16.0.0 – 172.31.255.255
+- 192.168.0.0/16 IP addresses: 192.168.0.0 – 192.168.255.255
+
 ## What is a VLAN?
+
+- Virtual LAN is a broadcast domain that is partitioned and isolated in a computer network at the data link layer.
+- VLANs work by applying tags to network frames and handle these tags in networking systems, creating the appearance and functionality of network traffic that is physically on a single network but acts as if it is split between separate networks.
 
 ## What is ARP and what is it used for?
 
+- Hardware addresses needed to transport data across a network's link layer.
+- ARP finds hardware address associated with an IP
+- If host A wants to send a packet to host B on same network, it uses ARP to find B's hardware address
+- If not on same network, host A uses ARP to find router
+- ARP is cached on each machine
+- ARP works by broadcasting packet asking for hardware address for an IP
+    * Corresponding machine replies: yes, that is the IP assigned to one of my interfaces with hardware address
+- `arp` examines and manipulates the kernel's ARP cache
+    * Useful for debugging e.g., two hosts using same IP
+
 ## What is the difference between TCP and UDP?
+
+- Reliable vs. unreliable
+- Ordered vs. unordered
+- Heavyweight vs. lightweight
+- Streaming
+- Header size
+- Examples: TCP used in HTTP, UDP used in DNS, FTP
 
 ## What is the purpose of a default gateway?
 
+- Routing table provides configuration information required to make decisions on where to route TCP/IP packets.
+- `route -n` lists the routing table.
+- Default gateway is the default route of outgoing traffic (i.e., `0.0.0.0`) typically to the network router.
+
 ## What is command used to show the routing table on a Linux box?
+
+- `route -n`
+- `netstat -rn`
 
 ## A TCP connection on a network can be uniquely defined by 4 things. What are those things?
 
+- Source port
+- Source address
+- Destination port
+- Destination address
+
 ## When a client running a web browser connects to a web server, what is the source port and what is the destination port of the connection?
 
-## How do you add an IPv6 address to a specific interface?
-
-## You have added an IPv4 and IPv6 address to interface eth0. A ping to the v4 address is working but a ping to the v6 address gives you the response sendmsg: operation not permitted. What could be wrong?
+- Source port is ephemeral between 10000 and 61000.
+- Destination port should be a common port e.g., `80` or `8080`.
 
 ## What is SNAT and when should it be used?
 
-## Explain how could you ssh login into a Linux system that DROPs all new incoming packets using a SSH tunnel.
+- Network address translation (NAT) is a method of remapping an IP address space into another by modifying network address information in the IP header of packets while they are in transit across a traffic routing device.
+- One internet-routable IP of a NAT gateway can be used for an entire private network.
+- Source network address translation (SNAT) is when source IP is RFC 1918 (private network) and is changed to non-RFC 1918 (public network) e.g., home laptop connecting to router which changes source address of TCP/IP packet to be it's external public IP.
+- Destination network address translation (DNAT) is when the destination IP is changed e.g., router changes destination address of TCP/IP packet to be the private IP.
+
+## Explain how could you ssh login into a Linux system that drops all new incoming packets using a SSH tunnel.
+
+- Local port forwarding:
+    * Forward a port from client to server.
+    * SSH client listens for connections on configured port, when it receives a connection, it tunnels it to an SSH server.
+    * Server connects to configured destination port possibly on a different machine than SSH server.
+    * Typical uses include jump servers, connecting to internal network service.
+    * General: `ssh -L port:host:hostport user@server`
+    * Example: `ssh -L 80:internal.server.com:80 jump.server.com`
+        + Opens a connection to jump server and forwards any connections to port 80 on local machine to port 80 on the internal server.
 
 ## How do you stop a DDoS attack?
 
+- Add a firewall rule to ban the offending IP at the edge (depends on system).
+- Rate limit requests.
+
 ## How can you see content of an ip packet?
 
-## What is IPoAC (RFC 1149)?
+`tcpdump` - packet sniffing and packet analyzing tool to troubleshoot connectivity issues.
+    * Used to capture, filter and analyze network traffic such as TCP/IP packets going through your system.
+    * Saves captured information in a PCAP file which can b eopened through applications such as Wireshark.
+    * `sudo tcpdump` to capture packets of current network interface connected to internet.
+    * `sudo tcpdump -i <network interface>` to capture packets at a specific network interface.
+    * `sudo tcpdump -w output.pcap -i <network interface>` to save captured packets to PCAP file.
+    * `sudo tcpdump -r output.pcap` to read captured packets from file.
+    * `sudo tcpdump -i <network interface> tcp` to capture only TCP packets.
+    * Sample `tcpdump` output line:
+    ```
+    08:41:13.729687 IP 192.168.64.28.22 > 192.168.64.1.41916: Flags [P.], seq 196:568, ack 1, win 309, options [nop,nop,TS val 117964079 ecr 816509256], length 372
+    ```
+    * Timestamp, IPv4, source IP + port, destination IP + port, TCP flags (P=data push), sequence number (packet contains bytes 196 to 568), ack number (1 since this is the side sending the data), window size (309 bytes avaiable in the receiving buffer), TCP options, packet length (372 bytes) of the payload data.
 
 ## What will happen when you bind port 0?
+
+- Kernel will select an unused port from the ephemeral port range.
