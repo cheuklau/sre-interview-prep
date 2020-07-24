@@ -1224,3 +1224,106 @@ echo 'net.ipv4.tcp_wmem= 10240 87380 12582912' >> /etc/sysctl.conf
 ## What will happen when you bind port 0?
 
 - Kernel will select an unused port from the ephemeral port range.
+
+# DevOps Questions:
+
+## Can you describe your workflow when you create a script?
+
+- For bash, print out the commands before running.
+- Debug one command at a time, before piping to the next.
+
+## What is GIT?
+
+- GIT is a version control software.
+- Developers typically create a branch off master.
+- Developers create pull requests to merge their branches back to master.
+- Master becomes the source of truth for code run in production.
+
+## What is a dynamically/statically linked file?
+
+- Two stages in getting from source code to executable:
+    1. Compilation that turns source code into object modules.
+    2. Linking which combines object modules into an executable.
+- This allows using 3rd party libraries withuot seeing source code or compiling code in different languages and combining them together.
+- When you statically link a file into an executable, contents of that file are included at link time.
+- When you dynamically link, a pointer to the file being linked in is included in the executable and the contents of the file are not included in link time.
+- At run time, those files are brought into the in-memory copy of the executable.
+
+## What does "./configure && make && make install" do?
+
+- Runs the three commands in sequence if they all succeed.
+- Otherwise it stops after the last successful command and returns exit code of `1`.
+
+## What is puppet/chef/ansible used for?
+
+- Configuration management.
+- Use of cookbooks/playbooks is infrastructure as code.
+- Prevents configuration drift among a fleet of servers using a centralized server.
+
+## What is Nagios/Zenoss/NewRelic used for?
+
+- Monitoring and alerting of applications.
+- New Relic can integrate with AWS to gather all Cloudwatch metrics.
+- Application logs can be sent from various clients to New Relic for parsing.
+- Dashboards can be created to monitor health of applications.
+- Integration with alerting e.g., Pager Duty, OpsGenie possible.
+
+## What is Jenkins/TeamCity/GoCI used for?
+
+- Jenkins is a CI/CD tool.
+- You can integrate Jenkins with Github to perform automated CI tests of PRs.
+- You can set up Jenkins to build artifacts after merge of PRs.
+- You can set up Jenkins to deploy artifacts as necessary.
+
+## What is the difference between Containers and VMs?
+
+- VMs are full virtualization of a server including hardware.
+- Containers (when created properly) contain just the bare minimum to run a given application.
+- Best practice dictates a container to just run a single process.
+- Containers use the concept of c-groups for isolation.
+
+## What is a virtual IP address? What is a cluster?
+
+- Virtual IP address is an IP that doesn't correspond to a physical network interface.
+- Uses for VIPs include NAT where many private IPs map to a single outgoing IP.
+- A cluster is a collection of servers that run a distributed process.
+
+## How do you print all strings of printable characters present in a file?
+
+- `cat <file>`
+
+## How do you find shared library dependencies?
+
+- `ldd` prints the shared libraries required by each program.
+- Usage: `ldd <some binary>`
+
+## What is Automake and Autoconf?
+
+- Sets up configuration and makefile for a c-program.
+
+## ./configure shows an error that libfoobar is missing on your system, how could you fix this, what could be wrong?
+
+- `libfoobar` is missing or user who ran `./configure` does not have permission to read `libfoobar`.
+
+## What are the advantages/disadvantages of script vs compiled program?
+
+- Script programs can be easily changed and run without compilation.
+- Compiled programs require compilation into binary but runs more efficiently.
+- In general, devops tasks should be performed with scripts since they do not require maximum efficiency and often need to be altered.
+
+## What's the relationship between continuous delivery and DevOps?
+
+- Continuous delivery is the pratice of continuously shipping software to production.
+- This is accomplished by tools such as Jenkins.
+- This is inline with devops mantra of automating a redundant process (code merge, unit tests, build, package, deploy) for maximizing change velocity.
+
+## What are the important aspects of a system of continuous integration and deployment?
+
+- Version control.
+- Continuous integration tests and build.
+- Continuous deployment with flexible rollback e.g., canary, blue-green strategies.
+
+## How would you enable network file sharing within AWS that would allow EC2 instances in multiple availability zones to share data?
+
+- Use elastic file system (EFS) which is per region, spanning multiple availability zones.
+- EFS can be used as if it were a network file share.
