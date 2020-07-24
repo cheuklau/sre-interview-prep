@@ -1327,3 +1327,29 @@ echo 'net.ipv4.tcp_wmem= 10240 87380 12582912' >> /etc/sysctl.conf
 
 - Use elastic file system (EFS) which is per region, spanning multiple availability zones.
 - EFS can be used as if it were a network file share.
+
+# Demo
+
+## Unpack test.tar.gz without man pages or google.
+
+## Remove all "*.pyc" files from testdir recursively?
+
+## Search for "my konfu is the best" in all *.py files.
+
+## Replace the occurrence of "my konfu is the best" with "I'm a linux jedi master" in all *.txt files.
+
+## Test if port 443 on a machine with IP address X.X.X.X is reachable.
+
+## Get http://myinternal.webserver.local/test.html via telnet.
+
+## How to send an email without a mail client, just on the command line?
+
+## Write a get_prim method in python/perl/bash/pseudo.
+
+## Find all files which have been accessed within the last 30 days.
+
+## Explain the following command (date ; ps -ef | awk '{print $1}' | sort | uniq | wc -l ) >> Activity.log
+
+## Write a script to list all the differences between two directories.
+
+## In a log file with contents as <TIME> : [MESSAGE] : [ERROR_NO] - Human readable text display summary/count of specific error numbers that occurred every hour or a specific hour.
