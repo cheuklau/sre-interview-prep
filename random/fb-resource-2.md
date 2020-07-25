@@ -1332,24 +1332,84 @@ echo 'net.ipv4.tcp_wmem= 10240 87380 12582912' >> /etc/sysctl.conf
 
 ## Unpack test.tar.gz without man pages or google.
 
+- `tar -xzvf test.tar.gz`
+    * `x` means extract
+    * `z` means using gzip
+    * `v` means verbose
+    * `f` means specify filename
+
 ## Remove all "*.pyc" files from testdir recursively?
+
+- `find /path/to/testdir -type f -name '*.pyc' -delete`
+- Note: `rm -r` is not for deleting files.
 
 ## Search for "my konfu is the best" in all *.py files.
 
+- `grep -r "my konfu is the best" --include "*.py" /path/to/dir`
+
 ## Replace the occurrence of "my konfu is the best" with "I'm a linux jedi master" in all *.txt files.
+
+- `find /path/to/dir -type f -name '*.txt' | xargs -I {}  sed -i '' 's/my konfu is the best/I\'m a linux jedi master/g' {}`
 
 ## Test if port 443 on a machine with IP address X.X.X.X is reachable.
 
+- `nmap -p 443 X.X.X.X`
+- `telnet X.X.X.X 443`
+- `nc -vz X.X.X.X 443`
+- Note: You cannot use ping as ping uses ICMP which does not have concept of ports.
+
 ## Get http://myinternal.webserver.local/test.html via telnet.
+
+- `telnet myinternal.webserver.local 80`
+- Press return
+- `GET /test.html`
 
 ## How to send an email without a mail client, just on the command line?
 
+- Use `mail`:
+```
+mail -s "title" "recipient@server.com" << EOF
+Some message
+Goes here.
+>>
+```
+- Note that you will have too configure `/etc/postfix/main.cf` and `/etc/postfix/smtp_sasl_passwords` with username and password.
+
 ## Write a get_prim method in python/perl/bash/pseudo.
+
+-
+```
+start = 11
+end = 25
+
+for val in range(start, end + 1):
+    if val > 1:
+        for n in range(2, val//2 + 2):
+            if (val % n) == 0:
+                break
+            else:
+                if n == val//2 + 1:
+                    print(val)
+```
 
 ## Find all files which have been accessed within the last 30 days.
 
+- `find /path/to/directory -atime <n*24 hours ago>`
+
 ## Explain the following command (date ; ps -ef | awk '{print $1}' | sort | uniq | wc -l ) >> Activity.log
+
+- `ps -ef` prints full listing of all proocesses.
+- The first column is the UID and `awk` pulls it out.
+- Then the UIDs are sorted, and only the unique values are kept.
+- Finally, the lines are counted up and appended to `Activity.log`.
+- For my local computer I get:
+```
+Fri Jul 24 22:20:56 PDT 2020
+30
+```
+- Indicating there are 30 unique UIDs running processes.
 
 ## Write a script to list all the differences between two directories.
 
-## In a log file with contents as <TIME> : [MESSAGE] : [ERROR_NO] - Human readable text display summary/count of specific error numbers that occurred every hour or a specific hour.
+- `diff -q /path/to/dir1 /path/to/dir2`
+- `q` tells `diff` to report only when files differ.
