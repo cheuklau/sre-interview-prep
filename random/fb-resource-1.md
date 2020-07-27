@@ -341,6 +341,7 @@ $ ls -i a c
 - 200: OK, request succeeded
 - 500: internal server error
 - 403: forbidden
+- 404: resource not found
 - 301: permanent redirect
 - 302: temporary redirect
 
