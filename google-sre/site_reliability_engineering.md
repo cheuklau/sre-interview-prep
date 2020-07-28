@@ -18,7 +18,7 @@
 - [Chapter 17 - Testing for Reliability](#Chapter-17---Testing-for-Reliability)
 - [Chapter 18 - Software Engineering in SRE](#Chapter-18---Software-Engineering-in-SRE)
 - [Chapter 19 - Load Balancing at the Frontend](#Chapter-19---Load-Balancing-at-the-Frontend)
-- [Chapter 20 - Load Balancing in the Datacenter](#Chapter 20 - Load Balancing in the Datacenter)
+- [Chapter 20 - Load Balancing in the Datacenter](#Chapter-20---Load-Balancing-in-the-Datacenter)
 
 ## Chapter 1 - Introduction
 
