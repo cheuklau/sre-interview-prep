@@ -439,3 +439,65 @@
     6. High saturation? If yes, investigate
     7. All resources checked? If no return to 3.
     8. Done
+
+## Network Troubleshooting (Source: Chapter 10 Systems Performance)
+
+### Packet Sniffing
+
+- Capture packets from network so protocol headers and data can be inspected.
+- Information captured:
+    * Timestamp
+    * Packet including header (ethernet, IP, TCP), partial or full payload data
+    * Metadata including number of packets, drops
+- `tcpdump -ni eth0`
+    ```
+    03:40:58.864678 IP 172.31.1.56.ssh > 98.234.62.159.51174: Flags [P.], seq 1128733:1128945, ack 648, win 275, options [nop,nop,TS val 3878900561 ecr 678600419], length 212
+    03:40:58.864718 IP 172.31.1.56.ssh > 98.234.62.159.51174: Flags [P.], seq 1128945:1129157, ack 648, win 275, options [nop,nop,TS val 3878900561 ecr 678600419], length 212
+    03:40:58.869297 IP 98.234.62.159.51174 > 172.31.1.56.ssh: Flags [P.], seq 648:684, ack 1092005, win 3496, options [nop,nop,TS val 678600421 ecr 3878900530], length 36
+    ```
+
+### Static Performance Tuning
+
+- Number of network interfaces in use
+- Max speed of network interfaces
+- Half or full duplex network interfaces
+- MTU configured for network interfaces
+- Is forwarding enabled?
+- Software imposed network throughput limits (important for cloud computing)
+
+### Resource Controls
+
+- Network bandwidth limits for different connections, processes, groups of processes applied by the kernel.
+- Priorization of network traffic (IP QoS). Higher priority to traffic between clients and server.
+
+### Analysis
+
+- `netstat` discussed in USE
+- `sar` discussed in USE
+- `ifconfig` discussed in USE
+- `ip` discussed in USE
+- `nicstat` discussed in USE
+- `ping`
+    ```
+    PING http2.joyent.map.fastly.net (151.101.53.63) 56(84) bytes of data.
+    64 bytes from 151.101.53.63 (151.101.53.63): icmp_seq=1 ttl=40 time=9.59 ms
+    ```
+    + Round trip time
+    + Note: ICMP treated lower priority so latency may be higher than usual
+- `traceroute`
+    ```
+    traceroute to google.com (172.217.14.206), 30 hops max, 60 byte packets
+    1  ec2-34-221-151-233.us-west-2.compute.amazonaws.com (34.221.151.233)  13.322 ms ec2-34-221-151-229.us-west-2.compute.amazonaws.com (34.221.151.229)  0.722 ms ec2-34-221-151-235.us-west-2.compute.amazonaws.com (34.221.151.235)  99.840 ms
+    2  100.65.40.32 (100.65.40.32)  5.396 ms 100.66.8.168 (100.66.8.168)  19.960 ms 100.66.8.180 (100.66.8.180)  12.572 ms
+    3  100.66.18.240 (100.66.18.240)  8.138 ms 100.66.20.8 (100.66.20.8)  5.079 ms 100.66.19.38 (100.66.19.38)  21.567 ms
+    ```
+    + Increases TTL by one for each packet causing sequence of gateways to the host to reveal themselves by sending ICMP time exceeded response messages
+    + Three RTTs
+    + Check for increased latencies for certain paths
+- `tcpdump` see previous section
+- Wireshark
+    * Used to analyze `tcpdump` pcap files.
+    * Useful features:
+        + Identify network connections and related packets
+        + Translation of hundreds protocol headers
+- `strace <pid>` to trace socket-related syscalls
