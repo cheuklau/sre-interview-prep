@@ -458,6 +458,29 @@
     7. All resources checked? If no return to 3.
     8. Done
 
+## The TSA Method (Source: http://www.brendangregg.com/tsamethod.html)
+
+- For each thread, measure total time in different thread states.
+- Investigate states from the most to least frequent with appropriate tools.
+- Thread time divided into:
+    1. Executing: on-CPU
+    2. Runnable: waiting for on-CPU
+    3. Anonymous paging (swapping): runnable but blocked in memory
+    4. Sleeping: waiting for I/O (network, blck, data/text page-ins)
+    5. Lock: waiting to acquire a synchronization lock (waiting for someone else)
+    6. Idle: waiting for work
+- Example 1:
+    * Application has performance issue. TSA measures thread state time for application threads in each of the six states. 50% time spent runnable, waiting for turn on CPU. USE shows CPU limit reached. Solution is to increase CPU limit.
+- Example 2:
+    * MySQL is slow. TSA measures thread state time for MySQL. Shows large percentage of time spent runnable, waitind for other applications stealing CPU cycles.
+- Document shows how to use `prstat` in Solaris but no Ubuntu/centos equivalent
+- Create Flame graph to visualize codepaths consumed CPUs
+    * x-axis: stack profile population (wider = more often it was in stacks)
+    * y-axis: stack depth
+    * Find long running functions
+- `perf record -F <sample rate> -p <pid>` Linux profiler
+    * Visualize as a Flame graph
+
 ## Network Troubleshooting (Source: Chapter 10 Systems Performance)
 
 ### Packet Sniffing
