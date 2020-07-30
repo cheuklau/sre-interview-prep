@@ -407,16 +407,34 @@
 - Software Resources:
     * Mutex locks
         + Utilization is the time lock was held
+            * With `CONFIG_LOCK_STATS=y` run `vi /proc/lock_stat`
+            * Check `holdtime-total` / `acquisitions`
         + Saturation by threads queued waiting on lock
-    * Thread pools
-        + Utilization is the time threads busy processing woork
-        + Saturation by number of requests waiting to be serviced by thread pool
+            * With `CONFIG_LOCK_STATS=y`, ruun `vi /proc/lock_stat`
+            * Check `waittime-total` / `contentions`
     * Process/thread capacity
         + Utilization is usage of limited number of processes or threads
-        + Saturation if waiting on allocation
-        + Errors when allocation failed e.g., cannot find fork
+            * `top`
+                + Check for `Tasks (current)`
+                + `sysctl kernel.threads-max` to return total threads
+        + Saturation if threads blocking on memory allocation
+            * `sar -B`
+                + Check for `pgscan`
+        + Errors when allocation failed
+            * `cant fork` errors
+            * `pthread_create()` error
     * File descriptor capacity
-        + Same as process/thread capacity but for file descriptors
+        + Utilization
+            - System-wide
+                * `sar -v`
+                    + Check `file-nr`
+                    + `vi /proc/sys/fs/file-max` to get max file descriptors
+            - Per-process
+                * `ls /proc/<pid>/fd | wc -l`
+                    + Compare against `ulimit -n`
+        + Error
+            - `strace`
+                + Check for errors on system calls returning file descriptors e.g., `open()`, `accept()` etc
 - Suggested Interpretations
     * Utilization
         + 100% is sign of a bottleneck
