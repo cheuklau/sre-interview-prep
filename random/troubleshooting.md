@@ -410,7 +410,7 @@
             * With `CONFIG_LOCK_STATS=y` run `vi /proc/lock_stat`
             * Check `holdtime-total` / `acquisitions`
         + Saturation by threads queued waiting on lock
-            * With `CONFIG_LOCK_STATS=y`, ruun `vi /proc/lock_stat`
+            * With `CONFIG_LOCK_STATS=y`, run `vi /proc/lock_stat`
             * Check `waittime-total` / `contentions`
     * Process/thread capacity
         + Utilization is usage of limited number of processes or threads
@@ -461,14 +461,49 @@
 ## The TSA Method (Source: http://www.brendangregg.com/tsamethod.html)
 
 - For each thread, measure total time in different thread states.
+    * `top -H -p <pid>`
+        ```
+        top - 07:14:15 up 6 days,  8:17,  1 user,  load average: 0.00, 0.00, 0.00
+        Threads:   1 total,   0 running,   1 sleeping,   0 stopped,   0 zombie
+        %Cpu(s):  0.0 us,  0.0 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.3 st
+        KiB Mem :  1006948 total,   231052 free,    86732 used,   689164 buff/cache
+        KiB Swap:        0 total,        0 free,        0 used.   762792 avail Mem
+          PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND
+           1 root      20   0  125628   5464   3932 S  0.0  0.5   0:27.95 systemd
+        ```
+        * Executing = `us` + `sy` + `ni`
+        * Runnable = `wa`
+        * Anonymous paging = `stopped`
+        * Sleeping = `sleeping`
+        * Lock = `stopped`
+        * Idle = `id`
 - Investigate states from the most to least frequent with appropriate tools.
 - Thread time divided into:
-    1. Executing: on-CPU
-    2. Runnable: waiting for on-CPU
-    3. Anonymous paging (swapping): runnable but blocked in memory
-    4. Sleeping: waiting for I/O (network, blck, data/text page-ins)
-    5. Lock: waiting to acquire a synchronization lock (waiting for someone else)
-    6. Idle: waiting for work
+    1. Executing
+        * Running on-CPU
+        * Split into user and kernel time
+        * For user time, `CPU profilers` (e.g., flame graphs) identify hot code paths
+        * For system time examine system call rates using `strace` or `dtrace`
+    2. Runnable
+        * Run queue latency
+        * Check system-wide CPU utilization and saturation with `USE`
+    3. Anonymous paging (swapping)
+        * Runnable but either swapped out or paged out, waiting for residency
+        * Check system-wide main memory availability with `USE`
+        * Look for paging and swapping memory saturation metrics with `USE`
+    4. Sleeping
+        * Waiting for I/O including network, blck, data/text page-ins
+        * Check system calls (identify time in system calls and related resources; check `mmap()` and non-system call I/O via mappings)
+        * Check resource usage to identify busy resources
+        * Check thread blocking (see off CPU performance analysis)
+        * `iostat`
+    5. Lock
+        * Waiting to acquire a synchronization lock (waiting for someone else)
+        * Identify the lock thread is waiting on and the reason it took time to acquire
+    6. Idle
+        * Waiting for work
+        * Check client load applied
+        * Various reasons for idleness e.g., waiting for new network connection, network I/O, a locl, timer; difficult to identify idle state
 - Example 1:
     * Application has performance issue. TSA measures thread state time for application threads in each of the six states. 50% time spent runnable, waiting for turn on CPU. USE shows CPU limit reached. Solution is to increase CPU limit.
 - Example 2:
