@@ -577,3 +577,168 @@
         + Identify network connections and related packets
         + Translation of hundreds protocol headers
 - `strace <pid>` to trace socket-related syscalls
+
+## Examples
+
+### In-house tool "running slow" on production server.
+
+- Problem report:
+    * Actual behavior: tool is running slow on the production server.
+    * Expected behavior: tool should be running faster returning results quicker.
+    * Questions:
+        - Were there changes pushed out to the tool recently?
+            + If yes, these changes may have caused performance degradation.
+            + A rollback may be necessary to triage, and further analyses e.g., TSA method, dynamic tracing, profiling may be used by developers to further diagnose performance hit.
+        - Is the tool being run in an anticipated manner?
+            + For example, a poorly formed database query could take a long time to run and eat up resources.
+- Triage:
+    * Migrate user to a new server, if no recent changes to the tool. Possible physical resource problems (i.e., CPU, memory, networking, storage) on the problematic server.
+    * If recent changes made, a rollback should occur, and further analysis should be performed on the performance degradation incurred.
+- Examine/Diagnose/Treat:
+    * High level
+        + Check application logs for possible errors (possibly due to recent update).
+    * USE method
+        + CPU
+            - Is systemwide utilization high? `vmstat`, `sar -u`, `uptime` looking for %cpu time in use.
+            - If so, check for the specific process utilization `top`, `pidstat`.
+            - If utilization is high, then check for saturation `vmstat`, `sar -q` to check for processes waiting in queue.
+            - Also check for the average time the process is waiting in queue in `/proc/pid/schedstat`.
+            - If we see signs of CPU saturation, we could either scale horizontally or vertically depending on the nature of the tool.
+                + Scale horizontally if the tool is parallelizable; otherwise vertically.
+            - If the tool was running fine before a given change, we could also jump to the TSA method to further analyze these processes.
+                + For example, use CPU profiler to determine code hot paths (i.e., portions in the code that eats up the most CPU time).
+                + Note: performance of the tool may be best left up to the developers.
+            - Note: hardware problems may also be possible (check `dmesg`).
+        + Memory
+            - Is systemwide utilization high? `free -m`, `vmstat`, `sar -r` looking for %memory used and memory swap.
+            - If so, check for specific process utilization `top` looking for virtual and resident main memory usage.
+            - If utilization is high, then check for saturation `vmstat`, `sar -B`, `sar -W` looking for pages scanned and pages swapped.
+                + Recall that pages scanned by the kernel occurs when the kernel needs to scan pages in use to evict for new processes.
+            - If we see signs of satuation, we could either scale horizontally or vertically depending on the nature of the tool (same as CPU).
+            - If the tool was running fine before a given change, we could use dynamic tracing `bpftrace` to find errors e.g., `malloc` errors.
+                + Note: performance of the tool may be best left up to the developers.
+            - Note: hardware problems may also be possible (check `dmesg`).
+        + Network
+            - Is systemwide utilization high? `sar -n DEV`, `ip -s link`, `sar -n TCP,ETCP` looking for kB received and transmitted per second, number of TCP connections and number of retransmits per second.
+            - If utilization is high, then check for saturation `ifconfig`, `netstat -s`, `sar -n EDEV` looking for dropped packets, packets that are put into FIFO queue because kernel cannot handle them quick enough, retransmits.
+            - If saturation occurs, look for errors `ifconfig`, `netstat -i`, `ip -s link`, `sar -n EDEV` looking for received and transmitted errors.
+            - If we signs of saturation or errors, we could again scale up or horizontally to increase bandwidth of the network interface cards.
+            - If the tool was running fine before a given change, we could use dynamic tracing `bpftrace` to find networking driver errors.
+                + Note: performance of the tool may be best left up to the developers.
+            - Note: hardware problems may also be possible (check `dmesg`).
+        + Storage I/O
+            - Is systemwide utilization high? `iostat -xd`, `sar -d` looking for %util which is the CPU time spent issuing I/O commands.
+            - If so, check per process `pidstat -d` looking for kb read and kb write per second.
+            - If utilization is high, then check `iostat -xd`, `sar -d` looking for average queue length of requests issued to device.
+            - If we see signs of saturation, we may want to consider increasing the storage size to increase I/O.
+            - If the tool was running fine before a given change we could use dynamic tracing `bpftrace` to see why the number of system calls to storage increased.
+            - Note: hardware problems may also be possible (check `dmesg`).
+        + Storage capacity
+            - Is systemwide utilization high? `df -h` looking for capacity.
+            - If utilization is high then look for no space errors in `bpftrace` or in `/var/log/messages`.
+            - If we see errors then clear unnecessary files or increase storage capacity.
+
+### Client cannot connect to server.
+
+- Problem report:
+    * Actual behavior: Client does not receive any response when accessing a server via HTTP.
+    * Expected behavior: Client should receive a 200 response with html in the payload from the server.
+    * Questions:
+        + Where is the client located?
+            - Typically, we should have a geographic-based monitoring tool like Pingdom in all user locations that check for page load time and size, and alert for discrepancies.
+        + Can we reproduce the error?
+            - To troubleshoot this type of network issue, we would need to coordinate with the client or be able to spin up a server in the client's local network.
+- Triage:
+    * Spin up another server or direct client to another server while we troubleshoot.
+    * If client cannot access secondary server, most likely a network issue between client and data center e.g., ISP which we cannot solve.
+- Examine/diagnose/treat:
+    * Initial thoughts:
+        + If the client does not receive any response, this suggests a connection was never made to the server at all.
+        + This could be an issue with DNS, a network component between the client and server, or firewall issue on the server side.
+        + Let's assume for this example, the client is connecting directly to the server with IP (no DNS).
+    * Network diagnostics
+        + First run `ping <server-ip>` for sanity check
+            - Assume no response.
+        + Next run `traceroute <server-ip>` to see if connection is lost somewhere along the way from client to server
+            - Assume traceroute never receives the final server response.
+        + Can a known whitelisted IP access the contents e.g., from a known office IP?
+            - If yes:
+                * Verify the client IP is not blocked/firewalled (e.g., check `iptables`), update if necessary.
+                * Otherwise, network issue is upstream of server, between client and server which we cannot handle e.g., ISP connection issues.
+            - If no:
+                * Is the port (80) open on the server and listening for TCP connections? Use `lsof -i -P`
+                * Is `httpd` running? Use `ps | grep httpd` to verify.
+                * Is `httpd` healthy? Use `journalctl -u httpd` or check `/var/log/messages` for any errors.
+                * If we still cannot find the issue, then apply USE to see if there is a resource bottleneck preventing httpd from serving traffic correctly.
+                * If no bottleneck is found, then we need to perform dynamic tracing and cpu profiling on httpd process for application level problems.
+
+### Client high latency response in loading page.
+
+- Problem report:
+    * Actual behavior: Client page loads taking very long.
+    * Expected behavior: Client page loads should be shorter.
+    * Questions:
+        + Where is the client located?
+            - Same as previous example, we need to work with client or set up a server in their local network to diagnose.
+        + Can we reproduce the error?
+- Triage:
+    * Spin up another server or direct client to another server while we troubleshoot.
+    * If possible, in a different geographic location.
+    * If latency still persists then this is not a server side issue.
+- Examine/diagnose/treat:
+    * Initial thoughts:
+        + Latency can be caused by one or more hosts between the client and server.
+        + Latency can also be caused server side by slow reponse time (e.g., slow database queries).
+    * Network diagnostics:
+        + First run `ping <server-ip>` for sanity check.
+            - Assume normal response.
+        + Next run `traceroute <server-ip>` to see if there is a large latency at any intermediate point.
+            - If yes, the latency may be bottlenecked by that hop.
+            - If no, most likely latency is server side.
+                * Perform USE method to see if there are any resource bottlenecks (most likely network).
+                * If no bottleneck is found, then we need to perform dyanmic tracing and cpu profiling for services running for application level problems.
+
+### Client 404 from web server.
+
+- Problem report:
+    * Actual behavior: Client receieves 404 response from webserver.
+    * Expected behavior: Client should receieve 200 response with html payload.
+    * Questions:
+        + Can we reproduce the error?
+            - This problem most likely does not deal with geographic location of the client unless there is geographically-dependent content.
+- Triage:
+    * Direct client to another server.
+    * If 404 still persists then possibly rollback to last working state.
+- Examine/diagnose/treat:
+    * Initial thoughts:
+        + A 404 response indicates the client can successfully connect to the server.
+        + A 404 response indicates the URI provided is trying to access a resource that cannot be found.
+    * Sanity checks
+        + Look in access logs for user IP and verify that entries have been made for user IP and 404 return code issued.
+        + Look in error logs to find the resource that was not found.
+        + Verify that the resource does not exist.
+            - For example, if resource is a local static file on server, verify it exists and that permissions are correct (i.e., webserver can access it).
+    * If everything looks correct above, apply USE method to look for resource bottlenecks.
+        + This seems unlikely for this scenario but possibly storage I/O prevents files from being read, etc.
+
+### Client 500 from web server.
+
+- Problem report:
+    * Actual behavior: Client receieves 500 response from webserver.
+    * Expected behavior: Client should receieve 200 response with html payload.
+    * Questions:
+        + Can we reproduce the error?
+- Triage:
+    * Direct client to another server.
+    * If 500 still persists then possibly rollback to last working state.
+- Examine/diagnose/treat:
+    * Initial thoughts:
+        + A 500 response indicates the client can successfully connect to the server.
+        + A 500 response indicates internal server error.
+    * Sanity checks
+        + Look in access logs for user IP and verify that entries have been made for user IP and 500 return code issued.
+        + Look in error logs for futher clues.
+    * If error logs do not show the problem, apply USE method to look for resource bottlenecks.
+    * Could also be an issue with a downstream service e.g., database.
+        + We would have to work through each of the downstream components applying USE method, and looking for application level errors.
+        + Also be careful of cascading failures between components.
