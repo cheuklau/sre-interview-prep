@@ -79,7 +79,6 @@ if __name__ == "__main__":
 
     # Start the game
     n_found, n_total = 0, n_rows * n_cols - n_mines
-    game_over = False
     while True:
 
         # Re-display game board
