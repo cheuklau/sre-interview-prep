@@ -46,7 +46,7 @@
     * Direct access to share memory (integrity via synchroonization primitives)
 - Word size
     * Processors designed around a max word size e.g., 32-bit or 64-bit which is the integer size and register size.
-- CPU performance couonters
+- CPU performance counters
     * Counters for:
         1. CPU cycles
         2. CPU instructions
