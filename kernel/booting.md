@@ -110,5 +110,71 @@ X+08000  +------------------------+
     * Set protection enable bit in CR0 (control register 0)
     * Jump to protected mode code
 
-### Copying Boot Parameters into the Zero Page
+### Skipped: Copying Boot Parameters into the Zero Page
+
+### Skipped: Console Initialization
+
+### Skipped: Heap Initialization
+
+### CPU Validatin
+
+- `check_cpu` function checks if kernel launches on right CPU level
+
+### Memory Detection
+
+- `detect_memory` provides map of available RAM to the CPU
+
+### Keyboard Initialization
+
+- `keyboard_init`
+
+### Skipped: Querying
+
+### Skipped: Video Mode Initialization
+
+### Kernel Data Types
+
+- char: 1 byte
+- short: 2 bytes
+- int: 4 bytes
+- long: 8 bytes
+- u8: 1 byte
+- u16: 2 bytes
+- u32: 4 bytes
+- u64: 8 bytes
+
+### Skip: Heap API
+
+### Skip: Setup Video Mode
+
+### Skip Last Preparatioon Before Transition into Prootected Mode
+
+### Skip: Setup the Interrupt Descriptor Table
+
+### Skip: Setupu the Global Descriptor Table
+
+### Actual transition into protected mode
+
+- `go_to_protected_mode`
+- We loaded the IDT, GDT, disabled interrupts and can now switch the CPU into protected mode
+- `protected_mode_jump` with twoo parameters: address of protected mode entry point, address of the `boot_params`
+
+## Transition to 64-Bit Mode
+
+### Skipped: 32 Bit Entry Point
+
+### Skipped: Reload the Segments if Needed
+
+### Skipped: Stack Setup and CPU Verification
+
+### Skipped: Calculate Relocation Address
+
+### Skipped: Reload the Segments if Needed
+
+### Skipped: Preparation Before Entering Long Mode
+
+### Skipped: Long Mode
+
+### Skipped: Early Page Table Initialization
+
 
