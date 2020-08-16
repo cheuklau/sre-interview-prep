@@ -151,5 +151,6 @@ BLOCK_IOPOLL:          0          0          0          0          0          0 
 
 - Tasklets are built on softirq concept
 - Tasklets are softirq that can be allocated and initialized at runtime and tasklets of the same type cannot be run on multiple processors at a time
+- Work queue is similar to tasklets except worqueue functioons run in the context of a kernel process whereas tasklet functioons run in the software interrupt context
 
 ## Last Part
