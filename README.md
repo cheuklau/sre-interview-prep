@@ -1,8 +1,14 @@
-# sre-interview-prep
+# SRE Interview Preparation
 
-The first part of this list contains resources that are good cramming material for SRE/Devops interviews. These resources actually work pretty well for 75% of the SRE/Devops interviews that you may face. For the other 25% (more selective companies), they require a deeper understanding that requires structured learning of fundamentals. For example, lets say they ask "describe the Linux booting process". Several of the resources below e.g., `linux-sys-admin`, `random` will give a cursory overview of the steps involved, but if the interviewer starts digging into a particular step e.g., with BIOS you will be lost without fundamental knowledge of computer architecture and assembly. Similar examples can be provided for other questions regarding application performance, memory management, CPU scheduling, etc.
+This repo contains resources for SRE interview preparation. It is divided into two sections:
+1. Cramming materials
+2. Fundamental materials
 
-# Good Cramming Material
+The `cramming` directory contains resources that are useful for cramming for SRE/Devops interviews. These resources work well for 75% of the SRE/Devops interviews that you may face. For the other 25% (more selective companies), they require a deeper understanding that requires structured learning of fundamentals.
+
+For example, lets say you are asked to describe the Linux booting process. Several of the resources in `cramming` will give a cursory overview of the steps involved, but if the interviewer starts digging deeper into a particular step, you will be lost without fundamental knowledge of computer architecture and assembly. Similar examples can be provided for other questions regarding application performance, memory management, CPU scheduling, etc. The `fundamentals` directory contains resources that are much more structured (i.e., full courses and textbooks) that provide a solid background to the material in `cramming`.
+
+# Cramming Material
 
 - `algoexpert`
     * Contains problems solved in algoexpert stored in Jupyter Notebooks
@@ -23,7 +29,8 @@ The first part of this list contains resources that are good cramming material f
     * Contains notes on tech blogs of various companies
 
 # Fundamental Material
-What I realized after completing the above is that there are knowledge gaps that require structured learning. For example, to fully understand the Linux boot process, you need to understand assembly code as well as computer architecture. The same for various concepts e.g., memory management, CPU scheduling, etc.
 
 - `kernel`
     * Contains notes about the Linux Kernel from [here](https://github.com/0xAX/linux-insides)
+- `system-perf`
+    * Contains notes from Systems Performance [book](https://www.amazon.com/Systems-Performance-Enterprise-Brendan-Gregg/dp/0133390098)
