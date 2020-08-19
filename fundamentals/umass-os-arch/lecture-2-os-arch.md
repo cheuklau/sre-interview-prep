@@ -103,7 +103,7 @@
 - Base (where valid memory address starts) and limit (where valid memory address ends) registers are loaded by the OS before starting a program
 - CPU checks each reference (instruction and data addresses), ensuring it falls between the base and limit register values
 
-### Process Layoout in Memory
+### Process Layout in Memory
 
 - Process address space divided into:
     * Stack `FFFF`: As program runs it pushes operands onto the stack and pops return values from the stack
