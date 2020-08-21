@@ -52,7 +52,7 @@
 - In general, these are good since OS is making choices about how to allocate resources
 - When accessing shared data these are challenges that force us to program carefully
 
-## Race COndition
+## Race Condition
 
 - A race condition is when output of a process is unexpectedly dependent on timing or other events
 - Note that the definition of a race depends on what we expected to happen
