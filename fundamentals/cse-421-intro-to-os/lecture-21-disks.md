@@ -72,3 +72,27 @@
     * Use a cache
     * Procrastination
 - Contrast with memory latencies which are hidden transparetnly by the processor
+- Here OS software directly involved
+
+## Source of Slowness
+
+- Reading or writing from the disk requires a series of steps, each of which is a potential source of latency
+    1. Issue the command: OS has to tell device what to do
+        * Commmand has to cross the device interconnect and the drive has to select which head to use
+    2. Seek time: drive has to move the head to appropriate track
+    3. Settle time: heads have to stabilize on the very narrow track
+    4. Rotation time: platters have to rotate to the position where the data is stored
+    5. Transfer time: Data has to be read and transmitted back across the interconnect into system memory
+
+## What Improves?
+
+- Interconnect speeds: seem to be increasing e.g., SATA-6
+- Seek times: not improving rapidly (moving physical objects part)
+- Rotation speeds: vary between devices but may not be primary source of latency anyway (physical limitations come into play)
+
+## The Already-Came I/O Crisis
+
+- Two factors collide:
+    1. Hard drive densities and capacities soar, encouraging users to save more stuff and increasing I/O demand
+    2. Seek times limit the ability of disks to keep up
+- Three orders of magnitude increase in capacity between 1991 and 2006, but only two in speed
