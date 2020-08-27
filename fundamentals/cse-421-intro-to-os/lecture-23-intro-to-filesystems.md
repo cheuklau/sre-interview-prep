@@ -102,28 +102,3 @@
     * Because contiguous writes are good for disk head scheduling and 4k is the page size which affects in-memory file caching
 - Why would file systems want to write file data in even larger chunks?
     * Because contiguous writes are good for disk head scheduling and many files are larger than 4k
-
-## ext4 inodes
-
-- 1 inode per file
-- 256 bytes so 1 per sector or 16 per block
-- Contains:
-    * Location of file data blocks (contents)
-    * Permissions including user, read/write/execute bits, etc
-    * Timestamps including creation (`crtime`), access (`atime`), content modification (`mtime`), attribute modification (`ctime`) and delete (`dtime`) times
-    * Named and located by number
-
-## Locating Inodes
-
-- How does the system translate an inode number into an inode structure?
-    * All inodes are created at hofrmat time at well-known locations
-- What are the consequences of this?
-    * Inodes may not be located near file contents
-        + `ext4` creates multiple blocks of inodes within the drive to reduce seek times between inodes and data
-    * Fixed number of inodes for the file system
-        + Can run out of inodes before we run out of data blocks
-        + `ext4` creates approximately one inode per 16kb of data blocks, but this can be configured at format time
-
-## Directories
-
-- Simply a special file the contents of which map inode numbers to relative names
