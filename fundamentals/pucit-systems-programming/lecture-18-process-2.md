@@ -456,3 +456,4 @@ void disp_status(int status){
       printf("My child continued its execution due to SIGCONT\n");
 }
 ```
+- `wait3()` and `wait4()` system calls similar to o`waitpid()` but also returns resource usage info about terminated child in the structure pointed too by `rusage` arguments
