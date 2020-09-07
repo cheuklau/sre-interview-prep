@@ -1,0 +1,179 @@
+# Lecture 24
+
+## Application design
+
+- Options:
+    1. One huge monolithic program that does everything
+    2. Multi-threaded program
+    3. Multiple programs using `fork()` that communicate with each other using some form of interprocess communciation (IPC)
+
+## Ways to share info between unix processes
+
+1. Reading and writing disk files (slow, not considered IPC anymore)
+2. Reading and writing to kernel buffer (requires mode switch)
+3. Reading and writing to shared memory (fastest, does not require mode switch)
+
+## Taxonoomy of IPC
+
+- Categories of IPC
+    1. Communication
+        * Data transfer
+            + Synchronizatioon between reader/writer processes is implicit i.e., handled by the OS kernel
+            + Futher divided into:
+                1. Byte stream
+                    + Each read op can read an arbitrary number of bytes
+                    + Example: Pipes, FIFOs, Stream Sockets
+                2. Message passing
+                    + Each read op reads an entire message as written by the writer; not possible to read part or multiple messages in a single read operation
+                    + Example: SysV MQ, POSIX MQ, Datagram Socket
+        * Shared memory
+            + No kernel is involved
+            + Non-destructive read semantics i.e., data placed in shared memory can be read by any number of processes any number of times
+            + Synchronization is not implict i.e., it relies on programmed
+            + Further divided int:
+                1. SysV SM
+                2. POSIX SM
+                3. Memory mappings
+                    * Anonymous mapping
+                    * Memory mapped files
+    2. Synchronization
+        * Allows processes to coordinate directions in order to avoid simulataneous updating of shared variables in shared memory regions
+        * Divided into:
+            1. Semaphores
+                * SysV semaphores
+                * POSIX semaphores
+                    + Named
+                    + Unnamed
+            2. For threads
+                * Mutex: used for locking
+                * Condition variables: used for waiting
+            3. File locks
+                * File locks
+                * Record locks
+    3. Signals
+        * Used by kernel to notify processes that some event occurred
+        * Divided into:
+            1. Standard signals
+            2. Real time signals
+
+## Persistence of IPC objects
+
+- Process persistence
+    * Exists as long as it is held open by a process
+    * Pipes and FIFOs
+    * TCP, UDP sockets
+    * Mutex, condition variables, read-write locks
+    * POSIX memory based semaphores
+- Kernel persistence
+    * Exists until kernel rebooots or IPC object is explicitly deleted
+    * Message queues, semaphores, shared memoory
+- File system persistence
+    * Exists until IPC object is explicitly deleted or file system crashes
+    * Message queues, semaphores and shared memory can be file system persistent if implemented using mapped files
+
+## Intro to signals
+
+- Suppose program running in `while(1)` loop and yoou press `ctrl+C` and program dies. How does this happen?
+    1. User presses `ctrl+C`
+    2. `tty` driver receives character, which matches `intr` (interrupt character)
+    3. `tty` driver calls signal system
+    4. signal system sends `SIGINT(2)` to the foreground running process
+    5. Process receives `SIGINT(2)`
+    6. Process dies
+- By pressing `ctrl+c` you ask the kernel to send `SIGINT` to the currently running foreground process
+- To change the key combination you can use `stty(1)` or `tcsetattr(2)` to replace the current `intr` control character with some other key combination
+- Signal is a software interrupt delivered to a process by OS because:
+    1. The process did something (`SIGFPE`, `SIGSEGV`, `SIGILL`)
+    2. User did something (`SIGINT`, `SIGQUIT`, `SIGTSTP`)
+    3. One process wants too tell another process something (`SIGCHILD`)
+- Signals are usually used by OS to notify processes that some event has occurred without these processes needing to poll for the event
+- Whenever process receives a signal it is interrupted from whatever it was doing and forced to execute piece of code called signal handler
+    * When signal handler function returns, the process continues execution as if this interruption never occurred
+- Signal handler is a gunctioon that gets called when a process receives a signal
+    * Every signal may have a specific handler associated with it
+    * A signal handler is called in asynchronous mode
+    * Failing to handle varioous signals wold likely cause our app to terminate when it receives such signals
+- Signals may be generated synchronously or asynchronously
+    * Synchrnous signals pertains to a specifc action in the program and is delivered (Unless blocked) during that action
+        + Example: most erors generate signals synchronously
+        + Explicit request by a process to generate a signal for the same process
+    * Asynchrounoous signals generated by events outside the control of the process that receives them
+        + These signals arrive at unpredictable times during execution
+        + Example: external events generate requests asynchronously; explicit request by a process to generate a signal for some other process
+
+## Signal delivery and handler execution
+
+- Assume yoou have a program that is executing instruction `n` and a signal arrives
+- Execution of code is stopped and kernel calls signal handler on behalf of process
+- Code of signal handler is executed
+- Program resumes at point of interruption
+
+## Signal handling on the shell proof of concept
+
+- `kill -l` to view all signals on the system
+- `ctrl-c` to send `SIGINT`
+- `ctrl-/` to send `SIGQUIT`
+- `ctrl-z` to send `SIGTSTP`
+- `SIGHUP` sent when user logs out
+- `SIGTERM` default sent by `kill`
+- `SIGILL` sent by OS to process if it tries to execute illegal instruction
+- `SIGFPE` sent to process when dividing by zero
+- `SIGSEGV` sent to process if it tries to access unauthorized memoory
+- `SIGKILL`, `SIGSTOP` are uncatchable
+
+## Signal Disposition
+
+- What will happen when a process receives a signal
+    * Terminate, ignore, core dump, stop, continue
+- `sleep 1000` running in foreground
+- `ctrl-z` to suspend process
+    * `ps -l` shows state is `T` for stopped
+- `kill -SIGCONT <PID>` to start it again
+    * `ps -l` shows state is `S` for sleeping
+- `fg %1` to bring it to the foreground
+- `ctrl-C` to terminate process
+- Use `trap` to ignore a signal
+    * `trap -l` to list all signals
+    * `trap '' 2` to ignore signal 2 (`SIGINT`)
+    * `ctrl-c` is now ignored
+- Note: `SIGKILL`, `SIGSTP` cannot be ignored even if you try to ignoroe it with `trap`
+- `trap 'echo we interrupted process' 2` to execute `echo` command when `SIGINT(2)` is used
+- A signal can be issued in oone of the following ways:
+    * Via keyboard as discussed above
+    * Using shell command via `kill`
+        + Note: `bg` gives `SIGSTP` and `fg` gives `SIGCONT`
+    * Using `kill()` or `raise()` system call
+    * Implicitly by a program e.g., divide by zero, invalid address, termination of child
+- Upon delivery oof a signal, process carries out one of the following actioons, depending on signal:
+    1. Ignored i.e., discarded by kernel and has no effect on rpocess
+    2. Terminated; abnormal process termination as opposed t onormal process termination when process calls `exit()`
+    3. Core dump and process terminated; core dump file contains an image of the virtual memory of process which can be loaded into debugger (`gdb`) in order to inspect state of process at time it terminated
+    4. Process is stopped (`SIGSTOP`, `SIGTSTP`)
+    5. Process is resumed (`SIGCONT`, `SIGCHLD`)
+- Each signal has a current disposition to determine how process behaves when OS delivers the signal
+- If yoou install no isgnal handler, run time env sets up a set of default signal handlers for program
+- Default actions:
+    * `TERM`: abrnomal termination of program; status made available to `wait()`
+    * `CORE`: core dump
+    * `STOP`: suspend/stop execution of process
+    * `CONT`: continue process if stopped
+    * `SIGHUP`: informs process user logged out
+    * `SIGINT`: user types terminal interrupt e.g., `ctrl-c`; sent to foreground process group; default is to oterminate process
+    * `SIGKILL`: cant be blocked or ignored; terminates process
+    * `SIGPIPE`: process tries to write to pipe or socket for which there is no corresponding reader process
+    * `SIGTERM`: default `kill` signal; well designed app should have a handler for `SIGTERM` causing app to exit gracefully cleaning up temp files and releasing other resources
+    * `SIGQUIT`: `ctrl-/`; signal sent to foreground process group; useful for stuck programs to generate core dump which can be used in `gdb` to look at stack trace
+    * `SIGFPE`: floating point arithmetic exception
+    * `SIGSEG `: program makes invalid memory reference
+    * `SIGSTOP`: cant be blocked or ignord; stops a process
+    * `SIGTSTP`: `ctrl-z`; sent to foreground process; job-control stop signal
+    * `SIGCHILD`: sent by kernel to a parent rpocess when one of its children terminates either by `exit()` or being killed
+    * `SIGCONT`: sent to a stopped process causing it to resume (i.e., reschduled to run at some later time)
+- Signal is generated by some event
+    * Once generated, signal deliverered to a process which takes some action
+    * Between generation and time it was delivered, signal is pending
+    * Pending signal is delivered too a process as soon as it is next scheduled to run or immediately if processs already running
+    * There can be at most oone pending signal of any type ie.e., standard signals are not queued
+- Sometimes need to ensure segment of code is not interrupted
+    * We can add a signal to process's signal mask (set of signals whose delivery is currently blocked)
+    * If singal is generated while it is masked/blocked, it remains pending until it is later unmasked or unblocked (removed from signal mask)
