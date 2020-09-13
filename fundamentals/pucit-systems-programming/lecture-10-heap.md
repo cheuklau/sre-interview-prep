@@ -120,7 +120,7 @@ int main(){
 - So calling `sbrk(0)` returns the current setting of the program without changing it
 - On failure, `-1` is returned with `errno ENOMEM`
 
-# Example
+## Example
 
 - After a process calls `malloc()`, which in turn calls `brk()`, what is the new location of program break `brk`?
 - Program:
