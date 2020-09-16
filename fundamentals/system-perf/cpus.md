@@ -54,3 +54,91 @@
         4. Floating point unit
         5. Memory I/O
         6. Resource I/O
+
+## Methodology and Analysis
+
+### Tools Method
+
+- `uptime`: load averages over time
+- `vmstat`: check idle columns to see how much headroom there is (<10% can be a problem)
+- `mpstat`: check for hot CPUs to identify thread scability problem
+- `top`: see which processes are top CPU consumers
+- `pidstat`: break down top CPU consumers into user and system time
+- `perf/dtrace`: profile CPU usage stack traces to identify why CPUs are in use
+
+### USE Method
+
+- Identify bottlenecks and errors across all components
+- For CPU:
+    * Utilization: time CPU was busy
+        + Percent busy, check per CPU to see if there are scalability issues
+    * Saturation: degree to which runnable threads are queued waiting for turn on CPU
+    * Errors: CPU errors
+        + Are all CPUs still online
+
+### Workload Characterization
+
+- Important for capacity planning, benchmarking and simulating workloads
+- Skip since we care about troubleshooting
+
+### Profiling
+
+- Sampling the state of the CPU at timed intervals:
+    1. Select type of proofile data to capture and rate
+    2. Begin sampling at timed intervals
+    3. Wait while activity of interest occurs
+    4. End sampling and collect sample data
+    5. Process the data
+- Generate flame graphs
+- CPU profile data on:
+    * User and/or kernel level
+    * Function and offset, function only, partial stack trace or full stack trace
+- Sampling stack trace points to higher-level reasons for CPU usage
+
+### Cycle Analysis
+
+- For usage of specific CPU resources such as caches and interconnects, profiling can use CPU performance counters (CPC)-based event triggers instead of timed intervals
+- Can reveal that cycles are spent stalled on Level 1, 2 or 3 cache misses, memory I/O or resuorce I/O or spent on floating-point operations or other activities
+
+### Performance Monitoring
+
+- Identify issues and patterns over time
+- Key metrics for CPUs:
+    1. Utilization: percent busy
+    2. Saturation: run-queue length
+
+### Static performance Tuning
+
+- Examine:
+    * CPUs available
+    * Size of CPU caches
+    * CPU clock speed
+    * CPU-related features enabled/disabled by BIOS?
+    * Software imposted CPU usage limits?
+
+### Priority Tuning
+
+- `nice` for adjusting process priority
+- Identify low-priority work e.g., monitoring agents and scheduled backups and moofidy them to start with a higher `nice` value
+- Can also change scheduler class/policy
+- Real-time scheduling class allow processes to preempt all other work
+
+### Resource Control
+
+- Skip
+
+### CPU Binding
+
+- Bind processes and threads to individual CPUs or collection or CPUs
+- Improve CPU cache warmth for processes, improving memory I/O performance
+
+### Microbenchmarking
+
+- Skip
+
+### Scaling
+
+- Skip
+
+## Analysis
+
