@@ -137,3 +137,92 @@
 - High-density storage as each bit is implemented using only two logical components: capacitor and transistor
 - Access time of main memory measured as the column address strobe (CAS) latency
     * For DDR3 it is around 10 ns
+
+## Methodology
+
+### Tools Method
+
+- `sar -B`: `pgscan` for Page scanning as a sign of memory pressure
+- `vmstat`: `si` and `so` for paging swap in and swap out
+- `vmstat`: `free` for available memory
+- `dmesg | grep "Out of Memory"` for OOM killer
+- `vmstat`: `w` for swapped out threads
+    * `vmstat -S`: `si` and `so` for swapping live
+- `top`: see which processes and users are top physical consumeers
+- trace memory allocation with stack traces to identify cause of memory usage
+
+### USE method
+
+- Identify bottlenecks and errors across all components
+- For memory:
+    * Utilization: how much memory is in use; both physical and virtual memory checked
+        + Make sure you don't count file system cache
+    * Saturation: degree of page scanning, paging, swaping and Linux OOM performed
+        + `vmstat`, `sar`, `dmesg`, OOM killer
+    * Errors: failed memory allocations
+        + Left for applications to report e.g., failed `brk()` calls
+
+### Characterizing Usage
+
+- Skip
+
+### Cycle Analysis
+
+- Skip
+
+### Performance Monitoring
+
+- Utilization: percent used inferred from available memory
+- Saturation: paging, swapping, OOM killer
+
+### Leak Detection
+
+- App grows endlessly, consuming memory from the free lists, from file system cache, and eventually from other processes (swap)
+- Caused by either:
+    1. Memory leak: memory is forgotten but never freed; requires software modification
+    2. Memory growth: software consuming memory normally but at a higher rate than desirable; software config change or software dev chang how app consumes memory
+- How memory leaks analyzed depends on software and language type
+    * Some allocators provide debug modes e.g., C
+        + Analyzed postmortem e.g., `gdb coredump`
+    * Tools developed for memory leak investigations e.g., `valgrind myexe`
+
+### Static Performance Tuning
+
+- How much main memory total?
+- How much memory apps configured to use?
+- Speed of main memory?
+- Number and size of CPU caches? TLB?
+- Are large pages used?
+- Is overcommit used?
+- Software imposed memory limits?
+
+## Analysis
+
+- `vmstat`
+    * High-levek view of system memory health
+    * Free memory and paging stats
+    * `swpd`: swapped out memory
+    * `free`: free available memory
+    * `buff`: memory in buffer cache
+    * `cache`: memory in page cache
+    * `si`: memory swapped in
+    * `so`: memory swapped out
+- `sar`
+    * Observe current activity and to archive historical statistics
+    * `-B` for paging stats
+    * `-H` for huge table stats
+    * `-r` for meemory utilization
+    * `-R` for memory stats
+    * `-S` for swap stats
+    * `-W` for swap stats
+- `ps`
+    * Process status lists memory usage stats
+    * `%MEM` for main memory usage (physical memory, RSS)
+    * `RSS` resident set size
+    * `VSZ` virtual memory szie
+    * Sum of `RSS` over all processes may be more than alvailable system memory due to overcounting of shared memory
+- `top`
+    * Monitors top running processes, including memory usage stats
+    * Summary of total, used, free main and virtual memory
+    * Sort per process by %mem
+
