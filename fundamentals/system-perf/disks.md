@@ -130,3 +130,13 @@
 
 ## Methodologies
 
+### Tools method
+
+- `iostat`
+    * Looks for busy disks (60% utilization)
+    * High average service times (10ms)
+    * High IOPS
+- `iotop`
+    * Identify which process causing disk I/O
+- Dynamic tracing
+    * Disk I/O latency in detail
