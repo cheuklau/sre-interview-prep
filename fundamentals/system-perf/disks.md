@@ -127,3 +127,6 @@
     * File system inflation, deflation and unrelated I/O
     * Paging due to system memory shortage
     * Device driver I/O size: rounding up I/O size or fragmenting I/O
+
+## Methodologies
+

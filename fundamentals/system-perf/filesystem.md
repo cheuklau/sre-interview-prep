@@ -118,3 +118,20 @@
 - When file systems fill, performance may degrade for a couple of reasons
 - When writing new data, takes more time to locate free blocks on disk
 - Areas of free space on disk likely to be smaller and more sparesely located degrading peformance due to smaller I/O or random I/O
+
+## Methodology
+
+## Disk Analysis
+
+- Ignore filesystem and focus on disk performance
+- Assumes worst I/O is disk I/o
+- Typically works with simpler file systems and smaller caches
+
+## Latency Analysis
+
+- Measure latency of filesystem operations
+    1. Application
+    2. Syscall interface
+    3. VFS
+    4. Top of file system
+
